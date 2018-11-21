@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.news.mapper.DepartmentInfoMapper">
+  <resultMap id="BaseResultMap" type="com.news.pojo.DepartmentInfo">
+    <id column="department_id" jdbcType="INTEGER" property="departmentId" />
+    <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
+    <result column="department_phone" jdbcType="VARCHAR" property="departmentPhone" />
+    <result column="department_intro" jdbcType="VARCHAR" property="departmentIntro" />
+    <result column="department_time" jdbcType="TIMESTAMP" property="departmentTime" />
+    <result column="department_state" jdbcType="VARCHAR" property="departmentState" />
+    <result column="department_likman" jdbcType="VARCHAR" property="departmentLikman" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    department_id, department_name, department_phone, department_intro, department_time, 
+    department_state, department_likman
+  </sql>
+  <select id="selectByExample" parameterType="com.news.pojo.DepartmentInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from department_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from department_info
+    where department_id = #{departmentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from department_info
+    where department_id = #{departmentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.news.pojo.DepartmentInfoExample">
+    delete from department_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.news.pojo.DepartmentInfo">
+    insert into department_info (department_id, department_name, department_phone, 
+      department_intro, department_time, department_state, 
+      department_likman)
+    values (#{departmentId,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{departmentPhone,jdbcType=VARCHAR}, 
+      #{departmentIntro,jdbcType=VARCHAR}, #{departmentTime,jdbcType=TIMESTAMP}, #{departmentState,jdbcType=VARCHAR}, 
+      #{departmentLikman,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.news.pojo.DepartmentInfo">
+    insert into department_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="departmentId != null">
+        department_id,
+      </if>
+      <if test="departmentName != null">
+        department_name,
+      </if>
+      <if test="departmentPhone != null">
+        department_phone,
+      </if>
+      <if test="departmentIntro != null">
+        department_intro,
+      </if>
+      <if test="departmentTime != null">
+        department_time,
+      </if>
+      <if test="departmentState != null">
+        department_state,
+      </if>
+      <if test="departmentLikman != null">
+        department_likman,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=INTEGER},
+      </if>
+      <if test="departmentName != null">
+        #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentPhone != null">
+        #{departmentPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentIntro != null">
+        #{departmentIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentTime != null">
+        #{departmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departmentState != null">
+        #{departmentState,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentLikman != null">
+        #{departmentLikman,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.news.pojo.DepartmentInfoExample" resultType="java.lang.Long">
+    select count(*) from department_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update department_info
+    <set>
+      <if test="record.departmentId != null">
+        department_id = #{record.departmentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.departmentName != null">
+        department_name = #{record.departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.departmentPhone != null">
+        department_phone = #{record.departmentPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.departmentIntro != null">
+        department_intro = #{record.departmentIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="record.departmentTime != null">
+        department_time = #{record.departmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.departmentState != null">
+        department_state = #{record.departmentState,jdbcType=VARCHAR},
+      </if>
+      <if test="record.departmentLikman != null">
+        department_likman = #{record.departmentLikman,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update department_info
+    set department_id = #{record.departmentId,jdbcType=INTEGER},
+      department_name = #{record.departmentName,jdbcType=VARCHAR},
+      department_phone = #{record.departmentPhone,jdbcType=VARCHAR},
+      department_intro = #{record.departmentIntro,jdbcType=VARCHAR},
+      department_time = #{record.departmentTime,jdbcType=TIMESTAMP},
+      department_state = #{record.departmentState,jdbcType=VARCHAR},
+      department_likman = #{record.departmentLikman,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.news.pojo.DepartmentInfo">
+    update department_info
+    <set>
+      <if test="departmentName != null">
+        department_name = #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentPhone != null">
+        department_phone = #{departmentPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentIntro != null">
+        department_intro = #{departmentIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentTime != null">
+        department_time = #{departmentTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departmentState != null">
+        department_state = #{departmentState,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentLikman != null">
+        department_likman = #{departmentLikman,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where department_id = #{departmentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.news.pojo.DepartmentInfo">
+    update department_info
+    set department_name = #{departmentName,jdbcType=VARCHAR},
+      department_phone = #{departmentPhone,jdbcType=VARCHAR},
+      department_intro = #{departmentIntro,jdbcType=VARCHAR},
+      department_time = #{departmentTime,jdbcType=TIMESTAMP},
+      department_state = #{departmentState,jdbcType=VARCHAR},
+      department_likman = #{departmentLikman,jdbcType=VARCHAR}
+    where department_id = #{departmentId,jdbcType=INTEGER}
+  </update>
+</mapper>

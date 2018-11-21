@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"       
+	xmlns:p="http://www.springframework.org/schema/p"  
+	xmlns:context="http://www.springframework.org/schema/context"   
+	xmlns:tx="http://www.springframework.org/schema/tx"  
+	xmlns:aop="http://www.springframework.org/schema/aop"  
+	xsi:schemaLocation="http://www.springframework.org/schema/beans    
+	http://www.springframework.org/schema/beans/spring-beans.xsd    
+	http://www.springframework.org/schema/aop    
+	http://www.springframework.org/schema/aop/spring-aop.xsd    
+	http://www.springframework.org/schema/tx    
+	http://www.springframework.org/schema/tx/spring-tx.xsd    
+	http://www.springframework.org/schema/context    
+	http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<description>Shiro配置文件</description>
+	<!-- SecurityManager配置 -->
+	<!-- 配置Realm域 -->
+	<!-- 密码比较器 -->
+	<!-- 代理如何生成？ 用工厂来生成Shiro的相关过滤器-->
+	<!-- 配置缓存：ehcache缓存 -->
+	<!-- 安全管理 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!-- Single realm app.  If you have multiple realms, use the 'realms' property instead. -->
+        <property name="realm" ref="authRealm"/><!-- 引用自定义的realm -->
+        <!-- 缓存 -->
+        <property name="sessionManager" ref="sessionManager" />
+         <!-- 缓存 -->
+        <property name="cacheManager" ref="shiroEhcacheManager"/>  
+    </bean>
+    
+   
+    
+    <!-- 会话验证调度器，每隔一段时间清理失效的用户session -->
+	<bean id="sessionValidationScheduler" class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
+		<!--单位：毫秒； 间隔多少时间检查，不配置是60分钟，现在配置的是30分钟 -->
+		<property name="interval" value="1800000" />
+		<property name="sessionManager" ref="sessionManager" />
+	</bean>
+    
+    <!-- 会话Cookie模板会话Cookie模板 -->
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<!-- cookie在浏览器的name -->
+		<constructor-arg value="news_session" />
+		<property name="httpOnly" value="true" />
+		<!-- maxAge=-1表示浏览器关闭时失效此Cookie -->
+		<property name="maxAge" value="-1" />
+	</bean>
+    
+    
+   
+    
+    <!-- 会话管理器 -->  
+  	<!-- Session 管理器 -->
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<!-- 单位：毫秒；设置ehcache全局会话超时时间，默认30分钟，即如果30分钟内没有访问会话将过期 -->
+		<property name="globalSessionTimeout" value="1800000" />
+		<!-- 间隔多少时间检查，不配置是60分钟 -->
+		<property name="sessionValidationScheduler" ref="sessionValidationScheduler" />
+		<!-- 是否开启 检测，默认开启 -->
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		<!-- 删除失效的session -->
+		<property name="deleteInvalidSessions" value="true" />
+		<!-- 会话Cookie模板 -->
+		<property name="sessionIdCookie" ref="sessionIdCookie" />
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
+
+ <!-- 自定义Session工厂方法 返回会标识是否修改主要字段的自定义Session-->
+    <bean id="sessionFactory" class="com.news.shiro.ShiroSessionFactory"/>
+
+    <!-- 自定义权限认证 -->
+    <bean id="authRealm" class="com.news.shiro.AuthRealm">
+    <!-- 自定义密码加密算法  -->
+	<property name="credentialsMatcher" ref="passwordMatcher"/>
+	</bean>
+
+	<!-- 设置密码加密策略 md5hash -->
+	<bean id="passwordMatcher" class="com.news.shiro.CustomCredentialsMatcher"/>
+
+    <!-- filter-name这个名字的值来自于web.xml中filter的名字 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+
+        <property name="filterChainDefinitions">
+            <!-- /**代表下面的多级目录也过滤 -->
+            <value>
+				<!-- 静态资源允许访问 -->
+				/WEB-INF/admin/css/** = anon
+				/WEB-INF/admin/js/** = anon
+				/WEB-INF/admin/images/** = anon
+				/WEB-INF/admin/lib/** = anon
+				/WEB-INF/admin/fonts/** = anon
+				/WEB-INF/admin/static/** = anon
+				/WEB-INF/admin/temp/** = anon
+				/WEB-INF/admin/login.html = anon
+
+            </value>
+        </property>
+    </bean>
+
+    <!-- 用户授权/认证信息Cache, 采用EhCache  缓存  -->
+    <bean id="shiroEhcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:spring/ehcache-shiro.xml"/>
+    </bean>
+   
+
+    <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <!-- 生成代理，通过代理进行控制 -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor">
+        <property name="proxyTargetClass" value="true"/>
+    </bean>
+    
+    <!-- 安全管理器 -->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+	
+</beans>
