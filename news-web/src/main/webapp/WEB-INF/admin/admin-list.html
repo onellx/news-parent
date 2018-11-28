@@ -37,7 +37,7 @@
 		<input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称" id="" name="">
 		<button type="submit" class="btn btn-success" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜用户</button>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="admin_add('添加管理员','admin-add.html','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="admin_add('添加管理员','admin-add','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a></span> <span class="r">共有数据：<strong th:text="${managerpos.size()}"></strong> 条</span> </div>
 	<table class="table table-border table-bordered table-bg">
 		<thead>
 			<tr>
@@ -58,13 +58,18 @@
 		</thead>
 		<tbody>
 			<tr class="text-c" th:each="managerpo:${managerpos}">
+
 				<td><input type="checkbox" value="1" name=""></td>
 				<td th:text="${managerpo.getManager().getManagerId()}"></td>
 				<td th:text="${managerpo.getManager().getManagerNumber()}"></td>
 				<td th:text="${managerpo.getManager().getManagerName()}"></td>
 				<td th:text="${managerpo.getManager().getManagerPhone()}"></td>
 				<td th:text="${managerpo.getManager().getManagerEmail()}"></td>
-				<td th:text="${managerpo.getRole().getRoleName()}"></td>
+				<td >
+					<label th:each="role:${managerpo.getRoles()}">
+						<span th:text="${role.getRoleName().substring(5,role.getRoleName().length())}"></span>
+					</label>
+				</td>
 				<td th:text="${managerpo.getDepartmentInfo().getDepartmentName()}"></td>
 				<td class="td-status" th:if="${managerpo.getManager().getManagerState()} eq '1' ">
 					<span class="label label-success radius">已启用</span>
@@ -72,7 +77,22 @@
 				<td class="td-status" th:if="${managerpo.getManager().getManagerState()} eq '2' ">
 					<span class="label radius">已停用</span>
 				</td>
-				<td class="td-manage"><a style="text-decoration:none" onClick="admin_stop(this,'10001')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a> <a title="编辑" href="javascript:;" onclick="admin_edit('管理员编辑','admin-add.html','1','800','500')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a> <a title="删除" href="javascript:;" onclick="admin_del(this,'1')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
+				<td class="td-manage">
+					<b th:if="${managerpo.getManager().getManagerState()} eq '1' ">
+						<a style="text-decoration:none" th:onclick="'javascript:admin_stop('+this+','+${managerpo.getManager().getManagerId()}+');'" href="javascript:;" title="停用">
+							<i class="Hui-iconfont">&#xe631;</i>
+						</a>
+					</b>
+					<b th:if="${managerpo.getManager().getManagerState()} eq '2' ">
+						<a style="text-decoration:none" th:onclick="'javascript:admin_start('+this+','+${managerpo.getManager().getManagerId()}+');'" href="javascript:;" title="停用">
+							<i class="Hui-iconfont">&#xe615;</i>
+						</a>
+					</b>
+
+					<a title="删除" href="javascript:;" th:onclick="'javascript:admin_del('+this+','+${managerpo.getManager().getManagerId()}+');'" class="ml-5" style="text-decoration:none">
+						<i class="Hui-iconfont">&#xe6e2;</i>
+					</a>
+				</td>
 			</tr>
 
 		</tbody>
@@ -89,6 +109,7 @@
 <script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
 <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript">
+
 /*
 	参数解释：
 	title	标题
@@ -100,17 +121,21 @@
 /*管理员-增加*/
 function admin_add(title,url,w,h){
 	layer_show(title,url,w,h);
+
 }
 /*管理员-删除*/
 function admin_del(obj,id){
 	layer.confirm('确认要删除吗？',function(index){
 		$.ajax({
 			type: 'POST',
-			url: '',
+			url: 'manager/upatestate',
+            data:{"id":id,"state":"3"},
 			dataType: 'json',
 			success: function(data){
 				$(obj).parents("tr").remove();
 				layer.msg('已删除!',{icon:1,time:1000});
+                window.location.reload();
+
 			},
 			error:function(data) {
 				console.log(data.msg);
@@ -119,19 +144,27 @@ function admin_del(obj,id){
 	});
 }
 
-/*管理员-编辑*/
-function admin_edit(title,url,id,w,h){
-	layer_show(title,url,w,h);
-}
+
 /*管理员-停用*/
 function admin_stop(obj,id){
 	layer.confirm('确认要停用吗？',function(index){
 		//此处请求后台程序，下方是成功后的前台处理……
-		
-		$(obj).parents("tr").find(".td-manage").prepend('<a onClick="admin_start(this,id)" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>');
-		$(obj).parents("tr").find(".td-status").html('<span class="label label-default radius">已禁用</span>');
-		$(obj).remove();
-		layer.msg('已停用!',{icon: 5,time:1000});
+        $.ajax({
+            url:"manager/upatestate",
+            type:"post",
+            data:{"id":id,"state":"2"},
+            dataType:'json',
+            success:function(data){
+                Object.prototype.toString.call(data);
+                if (data===true ) {
+                    window.location.reload();
+
+                    layer.msg('已停用!',{icon: 5,time:1000});
+                }else{
+                    layer.msg("操作失败！请重试")
+                }
+            }
+        });
 	});
 }
 
@@ -139,12 +172,23 @@ function admin_stop(obj,id){
 function admin_start(obj,id){
 	layer.confirm('确认要启用吗？',function(index){
 		//此处请求后台程序，下方是成功后的前台处理……
+        $.ajax({
+            url:"manager/upatestate",
+            type:"post",
+            data:{"id":id,"state":"1"},
+            dataType:'json',
+            success:function(data){
+                Object.prototype.toString.call(data);
+                if (data===true ) {
+                    window.location.reload();
+                    layer.msg('已启用!', {icon: 6,time:1000});
+                }else{
+                    layer.msg("操作失败！请重试")
+                }
+            }
+        });
 		
-		
-		$(obj).parents("tr").find(".td-manage").prepend('<a onClick="admin_stop(this,id)" href="javascript:;" title="停用" style="text-decoration:none"><i class="Hui-iconfont">&#xe631;</i></a>');
-		$(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
-		$(obj).remove();
-		layer.msg('已启用!', {icon: 6,time:1000});
+
 	});
 }
 </script>

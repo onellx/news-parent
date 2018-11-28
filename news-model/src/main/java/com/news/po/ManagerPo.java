@@ -2,8 +2,9 @@ package com.news.po;
 
 import com.news.pojo.DepartmentInfo;
 import com.news.pojo.Manager;
-import com.news.pojo.ManagerRole;
 import com.news.pojo.Role;
+
+import java.util.List;
 
 /**
  * @ClassName ManagerPo
@@ -15,7 +16,7 @@ public class ManagerPo {
 
     private Manager manager;
 
-    private Role role;
+    private List<Role> roles;
 
     private DepartmentInfo departmentInfo;
 
@@ -27,12 +28,12 @@ public class ManagerPo {
         this.manager = manager;
     }
 
-    public Role getRole() {
-        return role;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     public DepartmentInfo getDepartmentInfo() {

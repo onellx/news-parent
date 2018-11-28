@@ -41,7 +41,6 @@ public class AdminLoginController {
         String errorMessage = "";
         UsernamePasswordToken token = null;
         try {
-            Subject currentUser = SecurityUtils.getSubject();
             //1.得到Subject
             Subject subject = SecurityUtils.getSubject();
             //2.调用登录方法
@@ -72,18 +71,7 @@ public class AdminLoginController {
     }
 
 
-   /* @RequestMapping(value="/updatepassword",method=RequestMethod.POST)
-    @ResponseBody
-    @SystemControllerLog(description = "修改密码")
-    public HlwlResult editpassword(HlwlUser user){
-        //1.得到Subject
-        Subject subject = SecurityUtils.getSubject();
-        HlwlUser loginuser = (HlwlUser) subject.getPrincipal();
-        loginuser.setPassword(user.getPassword());
-        HlwlResult result = userService.updateUsers(loginuser);
-        return result;
-    }*/
-   @RequestMapping(value="/logouts",method=RequestMethod.POST)
+   @RequestMapping(value="/logouts",method=RequestMethod.GET)
    @SystemControllerLog(description = "退出系统")
    public String logout(RedirectAttributes redirectAttributes){
 
@@ -91,9 +79,9 @@ public class AdminLoginController {
        if (subject.isAuthenticated()) {
            subject.logout(); // session 会销毁，在SessionListener监听session销毁，清理权限缓存
            //redirectAttributes.addFlashAttribute("message", "您已安全退出");
-           return "redirect:/login";
+           return "redirect:/";
        }
-       return "redirect:/login";
+       return "redirect:/";
    }
 
 

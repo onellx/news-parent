@@ -23,64 +23,42 @@
 <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
 <script>DD_belatedPNG.fix('*');</script>
 <![endif]-->
-	<style>
-		#checkmessage{
-			height: 24px;
-			width: 24px;
-			position: absolute;
-			right: 20px;
-			top: 5px;
-			display: none;
-
-		}
-	</style>
 <title>新闻管理系统</title>
 </head>
 <body>
 <article class="page-container">
-	<form class="form form-horizontal" id="form-admin-add" onsubmit="javascript:return check_from()">
+	<form class="form form-horizontal" id="form-admin-add">
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>工号：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="managerNumber" name="managerNumber" onblur="check_num()">
-			<img  id="checkmessage"></img>
+			<input type="text" class="input-text" value="" placeholder="" id="managerNumber" name="managerNumber" th:value="${managerPo.getManager().getManagerNumber()}" readonly="readonly">
 		</div>
 	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>初始密码：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" id="managerPasswd" name="managerPasswd" >
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="password" class="input-text" autocomplete="off"  placeholder="确认新密码" id="password2" name="password2"  >
-		</div>
-	</div>
+
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>昵称：</label>
 		<div class="formControls col-xs-8 col-sm-9 skin-minimal">
-			<input type="text" class="input-text" value="" placeholder="" id="managerName" name="managerName">
+			<input type="text" class="input-text" value="" placeholder="" id="managerName" name="managerName" th:value="${managerPo.getManager().getManagerName()}">
 		</div>
 	</div>
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="managerPhone" name="managerPhone">
+			<input type="text" class="input-text" value="" placeholder="" id="managerPhone" name="managerPhone" th:value="${managerPo.getManager().getManagerPhone()}">
 		</div>
 	</div>
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>邮箱：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" placeholder="@" name="managerEmail" id="managerEmail" >
+			<input type="text" class="input-text" placeholder="@" name="managerEmail" id="managerEmail" th:value="${managerPo.getManager().getManagerEmail()}">
 		</div>
 	</div>
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3">角色：</label>
 		<div class="formControls col-xs-8 col-sm-9" >
-			<label th:each="role:${roles}">
-                <input name="roleIds" type="checkbox" th:value="${role.getRoleId()}" th:text="${role.getRoleName().substring(5,role.getRoleName().length())}" />
+			<label th:each="role:${managerPo.getRoles()}">
+                <span th:text="${role.getRoleName().substring(5,role.getRoleName().length())}"></span>
+
             </label>
 		</div>
 	</div>
@@ -88,13 +66,15 @@
 		<label class="form-label col-xs-4 col-sm-3">栏目组：</label>
 		<div class="formControls col-xs-8 col-sm-9">
 			<span class="select-box" style="width:150px;">
-				<select class="select" name="departmentId" size="1">
+				<select class="select" name="adminRole" size="1" disabled="true">
                     <option>---请选择栏目组---</option>
                     <span th:each="departmentInfo:${departmentInfos}">
-						<span>
-							<option th:value="${departmentInfo.getDepartmentId()}" th:text="${departmentInfo.getDepartmentName()}"></option>
+						<span th:if="${managerPo.getDepartmentInfo().getDepartmentId() eq departmentInfo.getDepartmentId()}">
+							<option th:value="${departmentInfo.getDepartmentId()}" th:text="${departmentInfo.getDepartmentName()}" selected></option>
 						</span>
-
+						<span th:if="${managerPo.getDepartmentInfo().getDepartmentId() ne departmentInfo.getDepartmentId()}">
+							  <option th:value="${departmentInfo.getDepartmentId()}" th:text="${departmentInfo.getDepartmentName()}"></option>
+						</span>
                     </span>
 
         </select>
@@ -120,47 +100,23 @@
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/messages_zh.js"></script>
 <script type="text/javascript">
-	var check;
-    function check_from(){
-        if (check===false){
-            alert("工号信息有误，请重新输入！");
+    $(function(){
+		var result1 = $("#managerNumber").val();
+
+		if (result1!=null){
+			$("#managerNumber").attr("readonly","readonly");
+		}else {
+            $("#managerNumber").attr("disabled",false);
 		}
-		return check;
-	}
-    function check_num() {
-        var managerNumber=$("#managerNumber").val();
-        $.ajax({
-            type: 'POST',
-            url: 'manager/chechnum',
-            data:{"managerNumber":managerNumber},
-            dataType: 'json',
-            success: function(data){
-                if (data===false){
-                    $("#checkmessage").attr('src',"../temp/big/no.jpg");
-                    $("#checkmessage").css({"display": "block"});
-                    check=false;
 
-                }else{
-                    $("#checkmessage").css({"display": "block"});
-                    $("#checkmessage").attr('src',"../temp/big/yes.png");
-                    check=true;
 
-                }
-            },
-            error:function(data) {
-                console.log(data.msg);
-            }
-        });
-
-    }
-
+    });
 $(function(){
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
 		radioClass: 'iradio-blue',
 		increaseArea: '20%'
 	});
-
 	
 	$("#form-admin-add").validate({
 		rules:{
@@ -170,29 +126,29 @@ $(function(){
                 maxlength:16
             },
             managerName:{
-				required:true,
-				minlength:2,
-				maxlength:16
-			},
+                required:true,
+                minlength:4,
+                maxlength:16
+            },
             managerPasswd:{
-				required:true
-			},
-			password2:{
-				required:true,
-				equalTo: "#managerPasswd"
-			},
+                required:true,
+            },
+            password2:{
+                required:true,
+                equalTo: "#managerPasswd"
+            },
 
             managerPhone:{
-				required:true,
-				isPhone:true
-			},
+                required:true,
+                isPhone:true,
+            },
             managerEmail:{
-				required:true,
-				email:true
-			},
+                required:true,
+                email:true,
+            },
             adminRole:{
-				required:true
-			}
+                required:true,
+            },
 		},
 		onkeyup:false,
 		focusCleanup:true,
@@ -200,21 +156,21 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "manager/add" ,
+				url: "../manager/update" ,
 				success: function(data){
-                    if (data===true){
-                        layer.msg('添加成功!',{icon:1,time:1000});
+				    if (data===true){
+                        layer.msg('修改成功!',{icon:1,time:1000});
                     }else {
-                        layer.msg('添加失败!',{icon:1,time:1000});
-                    }
+                        layer.msg('修改失败!',{icon:1,time:1000});
+					}
 				},
                 error: function(XmlHttpRequest, textStatus, errorThrown){
 					layer.msg('error!',{icon:1,time:1000});
 				}
 			});
+            parent.location.href="../main.action";
 			var index = parent.layer.getFrameIndex(window.name);
-            parent.window.location.reload();
-            parent.$('.btn-refresh').click();
+			parent.$('.btn-refresh').click();
 			parent.layer.close(index);
 		}
 	});

@@ -10,7 +10,6 @@
 	<context:component-scan base-package="com.news.controllers" />
 	<!-- 读取配置文件 -->
 
-	
 	<mvc:annotation-driven />
 	<!--<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">

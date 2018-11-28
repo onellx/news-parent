@@ -40,9 +40,9 @@
 				<li class="dropDown dropDown_hover">
 					<a href="#" class="dropDown_A"><shiro:principal property="managerName"/> <i class="Hui-iconfont">&#xe6d5;</i></a>
 					<ul class="dropDown-menu menu radius box-shadow">
-						<li><a href="javascript:;" onClick="myselfinfo()">个人信息</a></li>
-						<li><a href="#">切换账户</a></li>
-						<li><a href="#">退出</a></li>
+						<li><a href="javascript:;" th:onclick="'javascript:admin_edit('+${session._CURRENT_MANAGER.managerId}+',800,500);'" >个人信息</a></li>
+						<li><a href="#" th:onclick="'javascript:admin_editpasswd('+${session._CURRENT_MANAGER.managerId}+',800,500);'">修改密码</a></li>
+						<li><a href="#" th:href="@{/logouts}">退出</a></li>
 				</ul>
 			</li>
 				<li id="Hui-msg"> <a href="#" title="消息"><span class="badge badge-danger">1</span><i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i></a> </li>
@@ -68,7 +68,7 @@
 			<dt><i class="Hui-iconfont">&#xe616;</i> 文章管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="article-list.html" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
+					<li><a data-href="manager/editpasswd" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
 			</ul>
 		</dd>
 	</dl>
@@ -115,6 +115,18 @@
 			</ul>
 		</dd>
 	</dl>
+		</shiro:hasPermission>
+
+		</shiro:hasPermission>
+		<shiro:hasPermission name="部门管理">
+			<dl id="menu-department">
+				<dt><i class="Hui-iconfont">&#xe62e;</i> 部门管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+				<dd>
+					<ul>
+						<li><a data-href="department-list.html" data-title="部门管理" href="javascript:void(0)">部门管理</a></li>
+					</ul>
+				</dd>
+			</dl>
 		</shiro:hasPermission>
 		<shiro:hasPermission name="用户管理">
 			<dl id="menu-user">
@@ -226,7 +238,14 @@ function member_add(title,url,w,h){
 	layer_show(title,url,w,h);
 }
 
-
+/*管理员-编辑*/
+function admin_edit(id,w,h) {
+    layer_show("个人信息编辑", "admin-edit/" + id, w, h);
+}
+/*管理员-修改密码*/
+function admin_editpasswd(id,w,h) {
+    layer_show("修改密码", "change-password/", w, h);
+}
 </script> 
 
 

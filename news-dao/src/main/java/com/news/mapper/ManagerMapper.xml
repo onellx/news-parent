@@ -104,6 +104,11 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.news.pojo.Manager">
+
+    <selectKey keyProperty="managerId" resultType="java.lang.Integer" order="AFTER">
+      select last_insert_id()
+    </selectKey>
+
     insert into manager (manager_id, manager_name, manager_passwd, 
       manager_email, manager_phone, manager_state, 
       department_id, manager_number)
@@ -112,6 +117,10 @@
       #{departmentId,jdbcType=INTEGER}, #{managerNumber,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.news.pojo.Manager">
+
+    <selectKey keyProperty="managerId" resultType="java.lang.Integer" order="AFTER">
+      select last_insert_id()
+    </selectKey>
     insert into manager
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="managerId != null">

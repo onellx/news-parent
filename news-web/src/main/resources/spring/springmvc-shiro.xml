@@ -83,7 +83,10 @@
     <!-- filter-name这个名字的值来自于web.xml中filter的名字 -->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
-
+		<!--登录页面  -->
+		<property name="loginUrl" value="/"></property>
+		<!-- 登录成功后 -->
+		<property name="successUrl" value="/login-index"></property>
         <property name="filterChainDefinitions">
             <!-- /**代表下面的多级目录也过滤 -->
             <value>
@@ -96,6 +99,9 @@
 				/WEB-INF/admin/static/** = anon
 				/WEB-INF/admin/temp/** = anon
 				/WEB-INF/admin/login.html = anon
+				/login* = anon
+				/** = authc
+				/*.* = authc
 
             </value>
         </property>

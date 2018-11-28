@@ -3,6 +3,8 @@ package com.news.service;
 import com.news.po.NewsResult;
 import com.news.pojo.Manager;
 
+import java.util.List;
+
 /**
  * @ClassName ManagerService
  * @Author One_llx
@@ -14,7 +16,18 @@ public interface ManagerService {
     NewsResult selectBynameNum(String managerNum);
 
     //添加用户
-    NewsResult insertManager(Manager manager);
+    NewsResult insertManager(Manager manager,List<Integer> roldIds);
 
     NewsResult managerList();
+
+    NewsResult updateManager(Manager manager);
+
+    NewsResult findManagerById(Integer id);
+
+    //编辑一个用户信息
+    NewsResult updateManagerPasswd(Manager manager);
+
+    NewsResult findManagerByNumber(String number);
+
+
 }

@@ -1,5 +1,10 @@
 package com.news.pojo;
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
 public class DepartmentInfo {
@@ -10,6 +15,7 @@ public class DepartmentInfo {
     private String departmentPhone;
 
     private String departmentIntro;
+
 
     private Date departmentTime;
 
