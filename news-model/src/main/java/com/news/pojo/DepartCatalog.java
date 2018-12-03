@@ -1,5 +1,7 @@
 package com.news.pojo;
 
+import java.util.Objects;
+
 public class DepartCatalog {
     private Integer departmentId;
 

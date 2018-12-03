@@ -30,7 +30,7 @@ public class CatalogController {
     @RequestMapping(value = "system-category",method = RequestMethod.GET)
     @SystemControllerLog(description = "获取栏目列表")
     public String catalogList(Model model){
-        List<Catalog> catalogs = (List<Catalog>) catalogService.catalogList().getData();
+        List<Catalog> catalogs = (List<Catalog>) catalogService.findCatalogList().getData();
         model.addAttribute("catalogs",catalogs);
         return "system-category";
     }
@@ -59,8 +59,7 @@ public class CatalogController {
 
     @RequestMapping(value="catalog/update",method = RequestMethod.POST,produces="application/json;charset=UTF-8")
     @ResponseBody
-    public String manager_update(Catalog catalog){
-        System.out.println(catalog.getCatalogId()+"ss"+catalog.getCatalogName());
+    public String catalog_update(Catalog catalog){
         NewsResult newsResult = catalogService.updateCatalog(catalog);
         if (newsResult.getStatus()==200){
             return "true";
@@ -68,6 +67,31 @@ public class CatalogController {
         return "false";
     }
 
+    @RequestMapping(value = "catalog/save",method = RequestMethod.POST)
+    @ResponseBody
+    public String catalog_save(Catalog catalog){
+        NewsResult newsResult = catalogService.saveCatalog(catalog);
+        if (newsResult.getStatus()==200){
+            return "true";
+        }
+        return "false";
+    }
 
+    @RequestMapping(value = "system-category-add",method = RequestMethod.GET)
+    @SystemControllerLog(description = "添加栏目信息页面")
+    public String catalogToAdd(){
+
+        return "system-category-add";
+    }
+
+    @RequestMapping(value="catalog/checkcatalog",method = RequestMethod.POST,produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String catalog_check(String catalogName){
+        NewsResult newsResult = catalogService.findCatalogByName(catalogName);
+        if (newsResult.getStatus()==200){
+            return "false";
+        }
+        return "true";
+    }
 
 }

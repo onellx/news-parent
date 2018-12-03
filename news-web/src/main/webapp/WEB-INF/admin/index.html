@@ -41,11 +41,18 @@
 					<a href="#" class="dropDown_A"><shiro:principal property="managerName"/> <i class="Hui-iconfont">&#xe6d5;</i></a>
 					<ul class="dropDown-menu menu radius box-shadow">
 						<li><a href="javascript:;" th:onclick="'javascript:admin_edit('+${session._CURRENT_MANAGER.managerId}+',800,500);'" >个人信息</a></li>
-						<li><a href="#" th:onclick="'javascript:admin_editpasswd('+${session._CURRENT_MANAGER.managerId}+',800,500);'">修改密码</a></li>
-						<li><a href="#" th:href="@{/logouts}">退出</a></li>
+						<li><a href="javascript:" th:onclick="'javascript:admin_editpasswd('+${session._CURRENT_MANAGER.managerId}+',800,500);'">修改密码</a></li>
+						<li><a href="javascript:" th:href="@{/logouts}">退出</a></li>
 				</ul>
 			</li>
-				<li id="Hui-msg"> <a href="#" title="消息"><span class="badge badge-danger">1</span><i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i></a> </li>
+				<shiro:hasPermission name="审核管理">
+				<li id="Hui-msg">
+					<a href="javascript:;" th:onclick="'javascript:admin_audit(1200,600);'" title="消息">
+						<span class="badge badge-danger" th:text="${articles.size()==0?'':articles.size()}"></span>
+						<i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i>
+					</a>
+				</li>
+				</shiro:hasPermission>
 				<li id="Hui-skin" class="dropDown right dropDown_hover"> <a href="javascript:;" class="dropDown_A" title="换肤"><i class="Hui-iconfont" style="font-size:18px">&#xe62a;</i></a>
 					<ul class="dropDown-menu menu radius box-shadow">
 						<li><a href="javascript:;" data-val="default" title="默认（黑色）">默认（黑色）</a></li>
@@ -68,7 +75,7 @@
 			<dt><i class="Hui-iconfont">&#xe616;</i> 文章管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="manager/editpasswd" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
+					<li><a data-href="article-list" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
 			</ul>
 		</dd>
 	</dl>
@@ -115,8 +122,6 @@
 			</ul>
 		</dd>
 	</dl>
-		</shiro:hasPermission>
-
 		</shiro:hasPermission>
 		<shiro:hasPermission name="部门管理">
 			<dl id="menu-department">
@@ -245,6 +250,10 @@ function admin_edit(id,w,h) {
 /*管理员-修改密码*/
 function admin_editpasswd(id,w,h) {
     layer_show("修改密码", "change-password/", w, h);
+}
+
+function admin_audit(w,h) {
+    layer_show("审核列表", "audit-list/", w, h);
 }
 </script> 
 

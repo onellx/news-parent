@@ -23,40 +23,53 @@
 <script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
 <script>DD_belatedPNG.fix('*');</script>
 <![endif]-->
+	<style>
+		#checkmessage,#checkmessage2{
+			height: 24px;
+			width: 24px;
+			position: absolute;
+			right: 20px;
+			top: 5px;
+			display: none;
+
+		}
+	</style>
 <title>新闻管理系统</title>
 </head>
 <body>
 <article class="page-container">
-	<form class="form form-horizontal" id="form-admin-add">
+	<form class="form form-horizontal" id="form-admin-add" onsubmit="javascript:return check_from()">
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>ID：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="managerNumber" name="managerNumber"  readonly="readonly">
+			<input type="text" class="input-text" value="" placeholder="" id="departmentId" name="departmentId" th:value="${departmentPo.getDepartmentInfo().getDepartmentId()}" readonly="readonly">
 		</div>
 	</div>
 
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>部门名称：</label>
 		<div class="formControls col-xs-8 col-sm-9 skin-minimal">
-			<input type="text" class="input-text" value="" placeholder="" id="managerName" name="managerName" >
+			<input type="text" class="input-text" value="" placeholder="" id="departmentName" name="departmentName" th:value="${departmentPo.getDepartmentInfo().getDepartmentName()}" onblur="check_name()">
+			<img  id="checkmessage"></img>
 		</div>
 	</div>
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>部门电话：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="managerPhone" name="managerPhone" >
+			<input type="text" class="input-text" value="" placeholder="" id="departmentPhone" name="departmentPhone" th:value="${departmentPo.getDepartmentInfo().getDepartmentPhone()}" >
 		</div>
 	</div>
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>部门联系人：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" placeholder="@" name="managerEmail" id="managerEmail" >
+			<input type="text" class="input-text" placeholder="@" name="departmentLikman" id="departmentLikman" th:value="${departmentPo.getDepartmentInfo().getDepartmentLikman()}" onblur="check_likman()">
+			<img  id="checkmessage2"></img>
 		</div>
 	</div>
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3">备注：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<textarea name="" cols="" rows="" class="textarea"  placeholder="说点什么..." dragonfly="true" onKeyUp="$.Huitextarealength(this,100)"></textarea>
+			<textarea name="departmentIntro" cols="" rows="" class="textarea"  placeholder="说点什么..." dragonfly="true" onKeyUp="$.Huitextarealength(this,100)" th:text="${departmentPo.getDepartmentInfo().getDepartmentIntro()}"></textarea>
 			<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>
 		</div>
 	</div>
@@ -64,7 +77,17 @@
 	<div class="row cl">
 		<label class="form-label col-xs-4 col-sm-3">负责栏目：</label>
 		<div class="formControls col-xs-8 col-sm-9">
-			<span class="select-box" style="width:150px;">
+			<label th:if="${departmentPo.departmentInfo.getDepartmentId() eq 1}">
+				<input type="text" class="input-text" th:value="所有栏目" readonly="readonly"></input>
+			</label>
+			<label th:if="${departmentPo.departmentInfo.getDepartmentId() ne 1}">
+			<label th:each="dc:${departmentPo.getCatalogs()}">
+				<input name="catalogId" type="checkbox" th:value="${dc.getCatalogId()}" th:text="${dc.getCatalogName()}" checked/>
+			</label>
+			<label th:each="catalog:${catalogs}">
+				<input name="catalogId" type="checkbox" th:value="${catalog.getCatalogId()}" th:text="${catalog.getCatalogName()}" />
+			</label>
+			</label>
         </span>
     </div>
 	</div>
@@ -86,7 +109,92 @@
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/jquery.validate.js"></script>
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/messages_zh.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" th:inline="javascript">
+
+	var name=[[${departmentPo.getDepartmentInfo().getDepartmentName()}]];
+	var likman=[[${departmentPo.getDepartmentInfo().getDepartmentLikman()}]];
+    var check,check2;
+    function check_from(){
+        if (check===false||check2===false){
+            alert("部门信息有误，请重新输入！");
+            return false;
+        }else {
+            return true;
+        }
+    }
+    function check_name() {
+        var departmentName=$("#departmentName").val();
+        if (departmentName===""){
+            return;
+        }
+        if (name===departmentName){
+            $("#checkmessage").css({"display": "block"});
+            $("#checkmessage").attr('src',"../temp/big/yes.png");
+            check=true;
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '../department/checkname',
+            data:{"departmentName":departmentName},
+            dataType: 'json',
+            success: function(data){
+                if (data===false){
+                    $("#checkmessage").attr('src',"../temp/big/no.jpg");
+                    $("#checkmessage").css({"display": "block"});
+                    check=false;
+
+                }else{
+                    $("#checkmessage").css({"display": "block"});
+                    $("#checkmessage").attr('src',"../temp/big/yes.png");
+                    check=true;
+
+                }
+            },
+            error:function(data) {
+                console.log(data.msg);
+            }
+        });
+    }
+    function check_likman() {
+        var departmentLikman=$("#departmentLikman").val();
+        if (departmentLikman===""){
+            return;
+        }
+        if (likman===departmentLikman){
+            $("#checkmessage2").css({"display": "block"});
+            $("#checkmessage2").attr('src',"../temp/big/yes.png");
+            check2=true;
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '../department/checklikman',
+            data:{"departmentLikman":departmentLikman},
+            dataType: 'json',
+            success: function(data){
+                if (data===false){
+                    $("#checkmessage2").attr('src',"../temp/big/no.jpg");
+                    $("#checkmessage2").css({"display": "block"});
+                    check2=false;
+
+                }else{
+                    $("#checkmessage2").css({"display": "block"});
+                    $("#checkmessage2").attr('src',"../temp/big/yes.png");
+                    check2=true;
+
+                }
+            },
+            error:function(data) {
+                console.log(data.msg);
+            }
+        });
+    }
+
+
+
+
+
     $(function(){
 		var result1 = $("#managerNumber").val();
 
@@ -107,25 +215,15 @@ $(function(){
 	
 	$("#form-admin-add").validate({
 		rules:{
-            managerNumber:{
-                required:true,
-                minlength:10,
-                maxlength:16
-            },
-            managerName:{
+
+            departmentName:{
                 required:true,
                 minlength:4,
                 maxlength:16
             },
-            managerPasswd:{
-                required:true,
-            },
-            password2:{
-                required:true,
-                equalTo: "#managerPasswd"
-            },
 
-            managerPhone:{
+
+            departmentPhone:{
                 required:true,
                 isPhone:true,
             },
@@ -143,7 +241,7 @@ $(function(){
 		submitHandler:function(form){
 			$(form).ajaxSubmit({
 				type: 'post',
-				url: "../manager/update" ,
+				url: "../department/update" ,
 				success: function(data){
 				    if (data===true){
                         layer.msg('修改成功!',{icon:1,time:1000});
@@ -155,9 +253,9 @@ $(function(){
 					layer.msg('error!',{icon:1,time:1000});
 				}
 			});
-            parent.location.href="../main.action";
 			var index = parent.layer.getFrameIndex(window.name);
-			parent.$('.btn-refresh').click();
+            parent.window.location.reload();
+			parent.$('.btn-success').click();
 			parent.layer.close(index);
 		}
 	});

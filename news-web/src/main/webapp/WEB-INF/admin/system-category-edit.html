@@ -27,12 +27,22 @@
 <script>DD_belatedPNG.fix('*');</script>
 <![endif]-->
 <!--/meta 作为公共模版分离出去-->
+	<style>
+		#checkmessage{
+			height: 24px;
+			width: 24px;
+			position: absolute;
+			right: 20px;
+			top: 5px;
+			display: none;
 
+		}
+	</style>
 <title>栏目设置</title>
 </head>
 <body>
 <div class="page-container">
-	<form action="" method="post" class="form form-horizontal" id="form-category-edit">
+	<form action="" method="post" class="form form-horizontal" id="form-category-edit" onsubmit="javascript:return check_from()">
 		<div id="tab-category" class="HuiTab">
 			<div class="tabBar cl">
 				<span>基本编辑</span>
@@ -52,7 +62,8 @@
 						<span class="c-red">*</span>
 						栏目名称：</label>
 					<div class="formControls col-xs-8 col-sm-9">
-						<input type="text" class="input-text" th:value="${catalog.getCatalogName()}" placeholder="" id="catalogName" name="catalogName">
+						<input type="text" class="input-text" th:value="${catalog.getCatalogName()}" placeholder="" id="catalogName" name="catalogName" onblur="check_catalog()">
+						<img  id="checkmessage"></img>
 					</div>
 					<div class="col-3">
 					</div>
@@ -78,8 +89,58 @@
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/jquery.validate.js"></script>
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/messages_zh.js"></script>
-<script type="text/javascript">
-$(function(){
+<script type="text/javascript" th:inline="javascript">
+
+    var check;
+	var name=[[${catalog.getCatalogName()}]];
+    function check_from(){
+        if (check===false){
+            alert("栏目名称信息有误，请重新输入！");
+        }
+        return check;
+    }
+    function check_catalog() {
+        var catalogName=$("#catalogName").val();
+        if (catalogName===""){
+            return;
+		}
+        if (name===catalogName){
+            $("#checkmessage").css({"display": "block"});
+            $("#checkmessage").attr('src',"../temp/big/yes.png");
+            check=true;
+            return;
+		}
+        $.ajax({
+            type: 'POST',
+            url: '../catalog/checkcatalog',
+            data:{"catalogName":catalogName},
+            dataType: 'json',
+            success: function(data){
+                if (data===false){
+                    $("#checkmessage").attr('src',"../temp/big/no.jpg");
+                    $("#checkmessage").css({"display": "block"});
+                    check=false;
+
+                }else{
+                    $("#checkmessage").css({"display": "block"});
+                    $("#checkmessage").attr('src',"../temp/big/yes.png");
+                    check=true;
+
+                }
+            },
+            error:function(data) {
+                console.log(data.msg);
+            }
+        });
+    }
+
+
+
+
+
+
+
+    $(function(){
 	$('.skin-minimal input').iCheck({
 		checkboxClass: 'icheckbox-blue',
 		radioClass: 'iradio-blue',
@@ -118,7 +179,7 @@ $(function(){
             });
 			var index = parent.layer.getFrameIndex(window.name);
             parent.window.location.reload();
-			parent.$('.btn-refresh').click();
+			parent.$('.btn-success').click();
 			parent.layer.close(index);
 		}
 	});

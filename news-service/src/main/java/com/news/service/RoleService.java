@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface RoleService {
 
-    NewsResult RoleList();
+    NewsResult findRoleList();
 
 
 }

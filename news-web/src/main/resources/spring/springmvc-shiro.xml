@@ -99,6 +99,16 @@
 				/WEB-INF/admin/static/** = anon
 				/WEB-INF/admin/temp/** = anon
 				/WEB-INF/admin/login.html = anon
+				/admin/css/** = anon
+				/admin/js/** = anon
+				/admin/images/** = anon
+				/admin/lib/** = anon
+				/admin/fonts/** = anon
+				/admin/static/** = anon
+				/admin/temp/** = anon
+				/static/** = anon
+                /static/h-ui.admin/css/**=anon
+				/=anon
 				/login* = anon
 				/** = authc
 				/*.* = authc

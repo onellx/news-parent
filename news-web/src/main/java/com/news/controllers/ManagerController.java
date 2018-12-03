@@ -12,6 +12,7 @@ import com.news.service.ManagerService;
 import com.news.service.RoleService;
 import com.news.utils.Encrypt;
 import com.news.utils.JsonUtils;
+import com.news.utils.ListUtils;
 import com.news.utils.SysConstant;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -49,7 +50,7 @@ public class ManagerController {
     @RequestMapping(value = "admin-list",method = RequestMethod.GET)
     @SystemControllerLog(description = "获取管理员列表")
     public String managerList(Model model){
-        NewsResult newsResult = managerService.managerList();
+        NewsResult newsResult = managerService.findManagerPoList();
 
 
         List<ManagerPo> managers= (List<ManagerPo>) newsResult.getData();
@@ -77,8 +78,8 @@ public class ManagerController {
     @SystemControllerLog(description = "修改管理员个人信息页面")
     public String editAdmin(Model model, @PathVariable Integer id){
 
-        List<Role> roles= (List<Role>) roleService.RoleList().getData();
-        List<DepartmentInfo> departmentInfos= (List<DepartmentInfo>) departmentService.departmentList().getData();
+        List<Role> roles= (List<Role>) roleService.findRoleList().getData();
+        List<DepartmentInfo> departmentInfos= (List<DepartmentInfo>) departmentService.findDepartmentList().getData();
         model.addAttribute("roles",roles);
         model.addAttribute("departmentInfos",departmentInfos);
 
@@ -95,8 +96,8 @@ public class ManagerController {
     @SystemControllerLog(description = "添加管理员页面")
     public String updateAdmin(Model model){
 
-        List<Role> roles= (List<Role>) roleService.RoleList().getData();
-        List<DepartmentInfo> departmentInfos= (List<DepartmentInfo>) departmentService.departmentList().getData();
+        List<Role> roles= (List<Role>) roleService.findRoleList().getData();
+        List<DepartmentInfo> departmentInfos= (List<DepartmentInfo>) departmentService.findDepartmentList().getData();
         model.addAttribute("roles",roles);
         model.addAttribute("departmentInfos",departmentInfos);
 
@@ -169,6 +170,42 @@ public class ManagerController {
     @ResponseBody
     public String check_managerNumber(String managerNumber){
         NewsResult newsResult = managerService.findManagerByNumber(managerNumber);
+        if (newsResult.getStatus()==200){
+            return "false";
+        }
+        return "true";
+    }
+
+
+    @RequestMapping(value = "admin-edit-role/{id}",method = RequestMethod.GET)
+    @SystemControllerLog(description = "修改管理员权限页面")
+    public String editAdminRole(Model model, @PathVariable Integer id){
+
+        List<Role> roles= (List<Role>) roleService.findRoleList().getData();
+        List<DepartmentInfo> departmentInfos= (List<DepartmentInfo>) departmentService.findDepartmentList().getData();
+        model.addAttribute("departmentInfos",departmentInfos);
+
+        if (id!=null&&id!=0){
+            NewsResult newsResult = managerService.findManagerById(id);
+            ManagerPo managerPo= (ManagerPo) newsResult.getData();
+            List<Role> roles1=ListUtils.removeList(roles,managerPo.getRoles());
+            model.addAttribute("roles",roles1);
+            model.addAttribute("managerPo",managerPo);
+        }
+
+        return "admin-edit-role";
+    }
+
+
+    @RequestMapping(value="manager/updaterole",method = RequestMethod.POST,produces="application/json;charset=UTF-8")
+    @ResponseBody
+    public String manager_updaterole( Manager manager,String roleIds){
+        String[] split = roleIds.split(",");
+        List<Integer> roles=new ArrayList<Integer>();
+        for (String s:split) {
+            roles.add(Integer.parseInt(s));
+        }
+        NewsResult newsResult = managerService.updateManagerRole(manager,roles);
         if (newsResult.getStatus()==200){
             return "true";
         }

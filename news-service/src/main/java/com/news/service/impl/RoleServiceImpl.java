@@ -22,7 +22,7 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleMapper roleMapper;
 
-    public NewsResult RoleList() {
+    public NewsResult findRoleList() {
 
         List<Role> roles = roleMapper.selectByExample(new RoleExample());
         return NewsResult.ok(roles);

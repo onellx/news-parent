@@ -88,8 +88,8 @@
 		<label class="form-label col-xs-4 col-sm-3">栏目组：</label>
 		<div class="formControls col-xs-8 col-sm-9">
 			<span class="select-box" style="width:150px;">
-				<select class="select" name="departmentId" size="1">
-                    <option>---请选择栏目组---</option>
+				<select class="select" name="departmentId" id="departmentId" size="1">
+                    <option value="0">---请选择栏目组---</option>
                     <span th:each="departmentInfo:${departmentInfos}">
 						<span>
 							<option th:value="${departmentInfo.getDepartmentId()}" th:text="${departmentInfo.getDepartmentName()}"></option>
@@ -129,6 +129,9 @@
 	}
     function check_num() {
         var managerNumber=$("#managerNumber").val();
+        if (managerNumber===""){
+            return;
+        }
         $.ajax({
             type: 'POST',
             url: 'manager/chechnum',
@@ -198,6 +201,23 @@ $(function(){
 		focusCleanup:true,
 		success:"valid",
 		submitHandler:function(form){
+            var id=$("#departmentId").val();
+            if (id==0){
+                alert("请选择栏目！！！");
+                return false;
+            }
+            var ids = document.getElementsByName("roleIds");
+            var flag = false ;
+            for(var i=0;i<ids.length;i++){
+                if(ids[i].checked){
+                    flag = true ;
+                    break ;
+                }
+            }
+            if (flag===false){
+                alert("请选择权限！！！");
+                return;
+			}
 			$(form).ajaxSubmit({
 				type: 'post',
 				url: "manager/add" ,
@@ -214,7 +234,7 @@ $(function(){
 			});
 			var index = parent.layer.getFrameIndex(window.name);
             parent.window.location.reload();
-            parent.$('.btn-refresh').click();
+            parent.$('.btn-success').click();
 			parent.layer.close(index);
 		}
 	});

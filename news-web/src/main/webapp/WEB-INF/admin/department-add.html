@@ -5,26 +5,26 @@
 	  xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
 	  xmlns:sth="http://serendip.lumi">
 <head>
-<meta charset="utf-8">
-<meta name="renderer" content="webkit|ie-comp|ie-stand">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-<!--[if lt IE 9]>
-<script type="text/javascript" src="../lib/html5shiv.js"></script>
-<script type="text/javascript" src="../lib/respond.min.js"></script>
-<![endif]-->
-<link rel="stylesheet" type="text/css" href="../static/h-ui/css/H-ui.min.css" />
-<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/css/H-ui.admin.css" />
-<link rel="stylesheet" type="text/css" href="../lib/Hui-iconfont/1.0.8/iconfont.css" />
-<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/skin/default/skin.css" id="skin" />
-<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/css/style.css" />
-<!--[if IE 6]>
-<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
-<script>DD_belatedPNG.fix('*');</script>
-<![endif]-->
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="../lib/html5shiv.js"></script>
+	<script type="text/javascript" src="../lib/respond.min.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" href="../static/h-ui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="../lib/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/skin/default/skin.css" id="skin" />
+	<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/css/style.css" />
+	<!--[if IE 6]>
+	<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+	<script>DD_belatedPNG.fix('*');</script>
+	<![endif]-->
 	<style>
-		#checkmessage{
+		#checkmessage,#checkmessage2{
 			height: 24px;
 			width: 24px;
 			position: absolute;
@@ -34,82 +34,58 @@
 
 		}
 	</style>
-<title>新闻管理系统</title>
+	<title>新闻管理系统</title>
 </head>
 <body>
 <article class="page-container">
 	<form class="form form-horizontal" id="form-admin-add" onsubmit="javascript:return check_from()">
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>工号：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="managerNumber" name="managerNumber" onblur="check_num()">
-			<img  id="checkmessage"></img>
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>初始密码：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" id="managerPasswd" name="managerPasswd" >
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="password" class="input-text" autocomplete="off"  placeholder="确认新密码" id="password2" name="password2"  >
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>昵称：</label>
-		<div class="formControls col-xs-8 col-sm-9 skin-minimal">
-			<input type="text" class="input-text" value="" placeholder="" id="managerName" name="managerName">
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>手机：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" value="" placeholder="" id="managerPhone" name="managerPhone">
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>邮箱：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<input type="text" class="input-text" placeholder="@" name="managerEmail" id="managerEmail" >
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3">角色：</label>
-		<div class="formControls col-xs-8 col-sm-9" >
-			<label th:each="role:${roles}">
-                <input name="roleIds" type="checkbox" th:value="${role.getRoleId()}" th:text="${role.getRoleName().substring(5,role.getRoleName().length())}" />
-            </label>
-		</div>
-	</div>
-	<div class="row cl">
-		<label class="form-label col-xs-4 col-sm-3">栏目组：</label>
-		<div class="formControls col-xs-8 col-sm-9">
-			<span class="select-box" style="width:150px;">
-				<select class="select" name="departmentId" size="1">
-                    <option>---请选择栏目组---</option>
-                    <span th:each="departmentInfo:${departmentInfos}">
-						<span>
-							<option th:value="${departmentInfo.getDepartmentId()}" th:text="${departmentInfo.getDepartmentName()}"></option>
-						</span>
 
-                    </span>
-
-        </select>
-        </span>
-    </div>
-	</div>
-	<div class="row cl">
-		<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-			<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>部门名称：</label>
+			<div class="formControls col-xs-8 col-sm-9 skin-minimal">
+				<input type="text" class="input-text" value="" placeholder="" id="departmentName" name="departmentName"  onblur="check_name()">
+				<img  id="checkmessage"></img>
+			</div>
 		</div>
-	</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>部门电话：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="" placeholder="" id="departmentPhone" name="departmentPhone"  >
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>部门联系人：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" placeholder="@" name="departmentLikman" id="departmentLikman"  onblur="check_likman()">
+				<img  id="checkmessage2"></img>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">备注：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<textarea name="departmentIntro" cols="" rows="" class="textarea"  placeholder="说点什么..." dragonfly="true" onKeyUp="$.Huitextarealength(this,100)" ></textarea>
+				<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>
+			</div>
+		</div>
+
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">负责栏目：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<label th:each="catalog:${catalogs}">
+					<input name="catalogId" type="checkbox" th:value="${catalog.getCatalogId()}" th:text="${catalog.getCatalogName()}" />
+				</label>
+				</span>
+			</div>
+		</div>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+			</div>
+		</div>
 	</form>
 </article>
 
-<!--_footer 作为公共模版分离出去--> 
+<!--_footer 作为公共模版分离出去-->
 <script type="text/javascript" src="../lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="../lib/layer/2.4/layer.js"></script>
 <script type="text/javascript" src="../static/h-ui/js/H-ui.min.js"></script>
@@ -119,20 +95,26 @@
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/jquery.validate.js"></script>
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/validate-methods.js"></script>
 <script type="text/javascript" src="../lib/jquery.validation/1.14.0/messages_zh.js"></script>
-<script type="text/javascript">
-	var check;
+<script type="text/javascript" th:inline="javascript">
+
+    var check,check2;
     function check_from(){
-        if (check===false){
-            alert("工号信息有误，请重新输入！");
-		}
-		return check;
-	}
-    function check_num() {
-        var managerNumber=$("#managerNumber").val();
+        if (check===false||check2===false){
+            alert("部门信息有误，请重新输入！");
+            return false;
+        }else {
+            return true;
+        }
+    }
+    function check_name() {
+        var departmentName=$("#departmentName").val();
+        if (departmentName===""){
+            return;
+        }
         $.ajax({
             type: 'POST',
-            url: 'manager/chechnum',
-            data:{"managerNumber":managerNumber},
+            url: '../department/checkname',
+            data:{"departmentName":departmentName},
             dataType: 'json',
             success: function(data){
                 if (data===false){
@@ -151,75 +133,106 @@
                 console.log(data.msg);
             }
         });
+    }
+    function check_likman() {
+        var departmentLikman=$("#departmentLikman").val();
+        if (departmentLikman===""){
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '../department/checklikman',
+            data:{"departmentLikman":departmentLikman},
+            dataType: 'json',
+            success: function(data){
+                if (data===false){
+                    $("#checkmessage2").attr('src',"../temp/big/no.jpg");
+                    $("#checkmessage2").css({"display": "block"});
+                    check2=false;
 
+                }else{
+                    $("#checkmessage2").css({"display": "block"});
+                    $("#checkmessage2").attr('src',"../temp/big/yes.png");
+                    check2=true;
+
+                }
+            },
+            error:function(data) {
+                console.log(data.msg);
+            }
+        });
     }
 
-$(function(){
-	$('.skin-minimal input').iCheck({
-		checkboxClass: 'icheckbox-blue',
-		radioClass: 'iradio-blue',
-		increaseArea: '20%'
-	});
 
-	
-	$("#form-admin-add").validate({
-		rules:{
-            managerNumber:{
-                required:true,
-                minlength:10,
-                maxlength:16
+
+
+
+    $(function(){
+        var result1 = $("#managerNumber").val();
+
+        if (result1!=null){
+            $("#managerNumber").attr("readonly","readonly");
+        }else {
+            $("#managerNumber").attr("disabled",false);
+        }
+
+
+    });
+    $(function(){
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+
+        $("#form-admin-add").validate({
+            rules:{
+
+                departmentName:{
+                    required:true,
+                    minlength:4,
+                    maxlength:16
+                },
+
+
+                departmentPhone:{
+                    required:true,
+                    isPhone:true,
+                },
+                managerEmail:{
+                    required:true,
+                    email:true,
+                },
+                adminRole:{
+                    required:true,
+                },
             },
-            managerName:{
-				required:true,
-				minlength:2,
-				maxlength:16
-			},
-            managerPasswd:{
-				required:true
-			},
-			password2:{
-				required:true,
-				equalTo: "#managerPasswd"
-			},
-
-            managerPhone:{
-				required:true,
-				isPhone:true
-			},
-            managerEmail:{
-				required:true,
-				email:true
-			},
-            adminRole:{
-				required:true
-			}
-		},
-		onkeyup:false,
-		focusCleanup:true,
-		success:"valid",
-		submitHandler:function(form){
-			$(form).ajaxSubmit({
-				type: 'post',
-				url: "manager/add" ,
-				success: function(data){
-                    if (data===true){
-                        layer.msg('添加成功!',{icon:1,time:1000});
-                    }else {
-                        layer.msg('添加失败!',{icon:1,time:1000});
+            onkeyup:false,
+            focusCleanup:true,
+            success:"valid",
+            submitHandler:function(form){
+                $(form).ajaxSubmit({
+                    type: 'post',
+                    url: "../department/add" ,
+                    success: function(data){
+                        if (data===true){
+                            layer.msg('修改成功!',{icon:1,time:1000});
+                        }else {
+                            layer.msg('修改失败!',{icon:1,time:1000});
+                        }
+                    },
+                    error: function(XmlHttpRequest, textStatus, errorThrown){
+                        layer.msg('error!',{icon:1,time:1000});
                     }
-				},
-                error: function(XmlHttpRequest, textStatus, errorThrown){
-					layer.msg('error!',{icon:1,time:1000});
-				}
-			});
-			var index = parent.layer.getFrameIndex(window.name);
-            parent.window.location.reload();
-            parent.$('.btn-refresh').click();
-			parent.layer.close(index);
-		}
-	});
-});
-</script> 
+                });
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.window.location.reload();
+                parent.$('.btn-success').click();
+                parent.layer.close(index);
+            }
+        });
+    });
+</script>
 <!--/请在上方写此页面业务相关的脚本-->
 </body>
 </html>

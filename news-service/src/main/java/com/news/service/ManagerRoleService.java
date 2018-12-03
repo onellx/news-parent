@@ -13,4 +13,7 @@ import java.util.List;
 public interface ManagerRoleService {
 
     NewsResult saveRole(Integer managerId, List<Integer> roleIds);
+
+    NewsResult deleteRoleByManagerId(Integer managerId);
+
 }

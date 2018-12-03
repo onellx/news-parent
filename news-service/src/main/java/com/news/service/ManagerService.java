@@ -18,7 +18,9 @@ public interface ManagerService {
     //添加用户
     NewsResult insertManager(Manager manager,List<Integer> roldIds);
 
-    NewsResult managerList();
+    NewsResult findManagerPoList();
+
+    NewsResult findManagerList();
 
     NewsResult updateManager(Manager manager);
 
@@ -28,6 +30,12 @@ public interface ManagerService {
     NewsResult updateManagerPasswd(Manager manager);
 
     NewsResult findManagerByNumber(String number);
+
+    NewsResult findSuperManagerList();
+
+    NewsResult finManagerByName(String managerName);
+
+    NewsResult updateManagerRole(Manager manager,List<Integer> roldIds);
 
 
 }

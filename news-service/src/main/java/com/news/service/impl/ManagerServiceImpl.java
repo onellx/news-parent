@@ -3,6 +3,7 @@ package com.news.service.impl;
 import com.news.mapper.DepartmentInfoMapper;
 import com.news.po.ManagerPo;
 import com.news.pojo.*;
+import com.news.service.DepartmentService;
 import com.news.service.ManagerRoleService;
 import com.news.service.ManagerService;
 import com.news.mapper.ManagerMapper;
@@ -10,6 +11,7 @@ import com.news.mapper.ManagerRoleMapper;
 import com.news.mapper.RoleMapper;
 import com.news.po.NewsResult;
 import com.news.utils.Encrypt;
+import com.news.utils.StateListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,9 @@ public class ManagerServiceImpl implements ManagerService {
     @Autowired
     private ManagerRoleService managerRoleService;
 
+    @Autowired
+    private DepartmentService departmentService;
+
     public NewsResult selectBynameNum(String managerNum) {
         ManagerExample managerExample=new ManagerExample();
         ManagerExample.Criteria criteria = managerExample.createCriteria();
@@ -61,15 +66,9 @@ public class ManagerServiceImpl implements ManagerService {
         return NewsResult.ok();
     }
 
-    public NewsResult managerList() {
+    public NewsResult findManagerPoList() {
         List<ManagerPo> managerPos=new ArrayList<ManagerPo>();
-        ManagerExample managerExample=new ManagerExample();
-        ManagerExample.Criteria criteria = managerExample.createCriteria();
-        List<String> ids=new ArrayList<String>();
-        ids.add("1");
-        ids.add("2");
-        criteria.andManagerStateIn(ids);
-        List<Manager> managers = managerMapper.selectByExample(managerExample);
+        List<Manager> managers = (List<Manager>) this.findManagerList().getData();
 
         if (managers.isEmpty()) {
             return NewsResult.build(400,"没有管理员",managerPos);
@@ -109,7 +108,22 @@ public class ManagerServiceImpl implements ManagerService {
         return NewsResult.ok(managerPos);
     }
 
+    @Override
+    public NewsResult findManagerList() {
+        ManagerExample managerExample=new ManagerExample();
+        ManagerExample.Criteria criteria = managerExample.createCriteria();
+        criteria.andManagerStateIn(StateListUtils.getStateList());
+        List<Manager> managers = managerMapper.selectByExample(managerExample);
+        return NewsResult.ok(managers);
+    }
+
     public NewsResult updateManager(Manager manager) {
+        if(manager.getManagerState()!=null){
+            if (manager.getManagerState().equals("3")){
+                Manager manager1 = managerMapper.selectByPrimaryKey(manager.getManagerId());
+                departmentService.updateDepartmentLikman(manager1.getManagerName());
+            }
+        }
 
         managerMapper.updateByPrimaryKeySelective(manager);
         return NewsResult.ok();
@@ -159,13 +173,50 @@ public class ManagerServiceImpl implements ManagerService {
         ManagerExample example = new ManagerExample();
         ManagerExample.Criteria criteria = example.createCriteria();
         criteria.andManagerNumberEqualTo(number);
-        criteria.andManagerStateEqualTo("1");
+        criteria.andManagerStateIn(StateListUtils.getStateList());
         List<Manager> list = managerMapper.selectByExample(example);
         if(list != null && list.size() != 0)   //如果不为空 ，该用户名已被注册
         {
-            return NewsResult.build(400, "此工号已被注册");
+            return NewsResult.ok( list.get(0));
         }
 
+        return NewsResult.build(400, "没有此工号");
+    }
+
+    @Override
+    public NewsResult findSuperManagerList() {
+        NewsResult newsResult = findManagerPoList();
+        List<ManagerPo> managerPos = (List<ManagerPo>) newsResult.getData();
+        List<Manager> managers=new ArrayList<Manager>();
+        //可优化
+        for (int i=0;i<managerPos.size();i++) {
+            if (managerPos.get(i).getRoles().get(i).getRoleId()==1){
+                managers.add(managerPos.get(i).getManager());
+            }
+        }
+        return NewsResult.ok(managers);
+    }
+
+    @Override
+    public NewsResult finManagerByName(String managerName) {
+        ManagerExample managerExample=new ManagerExample();
+        ManagerExample.Criteria criteria = managerExample.createCriteria();
+        criteria.andManagerNameEqualTo(managerName);
+        criteria.andManagerStateIn(StateListUtils.getStateList());
+        List<Manager> managers = managerMapper.selectByExample(managerExample);
+        if (managers.isEmpty()){
+            return NewsResult.build(400,"没有此管理员");
+        }
+        return NewsResult.ok(managers);
+    }
+
+    @Override
+    public NewsResult updateManagerRole(Manager manager, List<Integer> roldIds) {
+        Manager m= (Manager) this.findManagerByNumber(manager.getManagerNumber()).getData();
+        manager.setManagerId(m.getManagerId());
+        this.updateManager(manager);
+        managerRoleService.deleteRoleByManagerId(manager.getManagerId());
+        managerRoleService.saveRole(manager.getManagerId(),roldIds);
         return NewsResult.ok();
     }
 

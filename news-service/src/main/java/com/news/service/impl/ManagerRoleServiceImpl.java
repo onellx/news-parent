@@ -3,6 +3,7 @@ package com.news.service.impl;
 import com.news.mapper.ManagerRoleMapper;
 import com.news.po.NewsResult;
 import com.news.pojo.ManagerRole;
+import com.news.pojo.ManagerRoleExample;
 import com.news.service.ManagerRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,15 @@ public class ManagerRoleServiceImpl implements ManagerRoleService {
             managerRole.setRoleId(roleId);
             int i=managerRoleMapper.insertSelective(managerRole);
         }
+        return NewsResult.ok();
+    }
+
+    @Override
+    public NewsResult deleteRoleByManagerId(Integer managerId) {
+        ManagerRoleExample managerRoleExample=new ManagerRoleExample();
+        ManagerRoleExample.Criteria criteria = managerRoleExample.createCriteria();
+        criteria.andManagerIdEqualTo(managerId);
+        managerRoleMapper.deleteByExample(managerRoleExample);
         return NewsResult.ok();
     }
 }

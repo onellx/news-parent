@@ -79,19 +79,23 @@
 				</td>
 				<td class="td-manage">
 					<b th:if="${managerpo.getManager().getManagerState()} eq '1' ">
-						<a style="text-decoration:none" th:onclick="'javascript:admin_stop('+this+','+${managerpo.getManager().getManagerId()}+');'" href="javascript:;" title="停用">
+						<a style="text-decoration:none" th:onclick="'javascript:admin_state('+this+','+${managerpo.getManager().getManagerId()}+',2);'" href="javascript:;" title="停用">
 							<i class="Hui-iconfont">&#xe631;</i>
 						</a>
 					</b>
 					<b th:if="${managerpo.getManager().getManagerState()} eq '2' ">
-						<a style="text-decoration:none" th:onclick="'javascript:admin_start('+this+','+${managerpo.getManager().getManagerId()}+');'" href="javascript:;" title="停用">
+						<a style="text-decoration:none" th:onclick="'javascript:admin_state('+this+','+${managerpo.getManager().getManagerId()}+',1);'" href="javascript:;" title="启用">
 							<i class="Hui-iconfont">&#xe615;</i>
 						</a>
 					</b>
-
-					<a title="删除" href="javascript:;" th:onclick="'javascript:admin_del('+this+','+${managerpo.getManager().getManagerId()}+');'" class="ml-5" style="text-decoration:none">
+					<a title="编辑" href="javascript:;" th:onclick="'javascript:admin_edit_role('+${managerpo.getManager().getManagerId()}+',800,500);'" class="ml-5" style="text-decoration:none">
+						<i class="Hui-iconfont">&#xe6df;</i>
+					</a>
+					<span th:if="${managerpo.getManager().getManagerId() ne 1}">
+					<a title="删除" href="javascript:;" th:onclick="'javascript:admin_state('+this+','+${managerpo.getManager().getManagerId()}+',3);'" class="ml-5" style="text-decoration:none">
 						<i class="Hui-iconfont">&#xe6e2;</i>
 					</a>
+					</span>
 				</td>
 			</tr>
 
@@ -123,13 +127,17 @@ function admin_add(title,url,w,h){
 	layer_show(title,url,w,h);
 
 }
-/*管理员-删除*/
-function admin_del(obj,id){
+
+function admin_edit_role(id,w,h) {
+    layer_show("权限编辑", "admin-edit-role/" + id, w, h);
+}
+/*管理员-状态*/
+function admin_state(obj,id,state){
 	layer.confirm('确认要删除吗？',function(index){
 		$.ajax({
 			type: 'POST',
 			url: 'manager/upatestate',
-            data:{"id":id,"state":"3"},
+            data:{"id":id,"state":state},
 			dataType: 'json',
 			success: function(data){
 				$(obj).parents("tr").remove();
@@ -141,54 +149,6 @@ function admin_del(obj,id){
 				console.log(data.msg);
 			},
 		});		
-	});
-}
-
-
-/*管理员-停用*/
-function admin_stop(obj,id){
-	layer.confirm('确认要停用吗？',function(index){
-		//此处请求后台程序，下方是成功后的前台处理……
-        $.ajax({
-            url:"manager/upatestate",
-            type:"post",
-            data:{"id":id,"state":"2"},
-            dataType:'json',
-            success:function(data){
-                Object.prototype.toString.call(data);
-                if (data===true ) {
-                    window.location.reload();
-
-                    layer.msg('已停用!',{icon: 5,time:1000});
-                }else{
-                    layer.msg("操作失败！请重试")
-                }
-            }
-        });
-	});
-}
-
-/*管理员-启用*/
-function admin_start(obj,id){
-	layer.confirm('确认要启用吗？',function(index){
-		//此处请求后台程序，下方是成功后的前台处理……
-        $.ajax({
-            url:"manager/upatestate",
-            type:"post",
-            data:{"id":id,"state":"1"},
-            dataType:'json',
-            success:function(data){
-                Object.prototype.toString.call(data);
-                if (data===true ) {
-                    window.location.reload();
-                    layer.msg('已启用!', {icon: 6,time:1000});
-                }else{
-                    layer.msg("操作失败！请重试")
-                }
-            }
-        });
-		
-
 	});
 }
 </script>

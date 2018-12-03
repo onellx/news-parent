@@ -24,4 +24,6 @@ public class SysConstant {
 	public static int PAGE_SIZE = 10;							//分页时一页显示多少条记录
 
 	public static String CURRENT_MANAGER_ROLE="_CURRENT_ROLE";
+
+	public static int SUPER_DEPARMENT_ID=1;//总部id
 }

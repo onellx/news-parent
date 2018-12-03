@@ -1,5 +1,7 @@
 package com.news.pojo;
 
+import java.util.Objects;
+
 public class Role {
     private Integer roleId;
 
@@ -29,5 +31,19 @@ public class Role {
 
     public void setRoleComment(String roleComment) {
         this.roleComment = roleComment == null ? null : roleComment.trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role)) return false;
+        Role role = (Role) o;
+        return Objects.equals(getRoleId(), role.getRoleId());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getRoleId(), getRoleName(), getRoleComment());
     }
 }

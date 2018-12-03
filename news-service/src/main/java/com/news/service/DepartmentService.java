@@ -3,6 +3,8 @@ package com.news.service;
 import com.news.po.NewsResult;
 import com.news.pojo.DepartmentInfo;
 
+import java.util.List;
+
 /**
  * @ClassName DepartmentService
  * @Author One_llx
@@ -11,9 +13,20 @@ import com.news.pojo.DepartmentInfo;
  */
 public interface DepartmentService {
 
-    NewsResult departmentList();
+    NewsResult findDepartmentList();
 
-    NewsResult departmentPoList();
+    NewsResult findDepartmentPoList();
+
+    NewsResult updateDepartment(DepartmentInfo departmentInfo,List<Integer> cids);
 
     NewsResult updateDepartment(DepartmentInfo departmentInfo);
+
+    NewsResult findDepartmentPoById(Integer deparmentId);
+
+    NewsResult findDepartmentByName(String departmentName);
+
+    NewsResult saveDepartment(DepartmentInfo departmentInfo, List<Integer> cids);
+
+    NewsResult updateDepartmentLikman(String departmentLikman);
+
 }

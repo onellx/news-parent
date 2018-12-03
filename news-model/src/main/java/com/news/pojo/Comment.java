@@ -62,4 +62,5 @@ public class Comment {
     public void setCommentContent(String commentContent) {
         this.commentContent = commentContent == null ? null : commentContent.trim();
     }
+
 }

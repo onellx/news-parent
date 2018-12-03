@@ -1,5 +1,7 @@
 package com.news.pojo;
 
+import java.util.Objects;
+
 public class Catalog {
     private Integer catalogId;
 
@@ -29,5 +31,19 @@ public class Catalog {
 
     public void setCatalogState(String catalogState) {
         this.catalogState = catalogState == null ? null : catalogState.trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Catalog catalog = (Catalog) o;
+        return Objects.equals(catalogId, catalog.catalogId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(catalogId, catalogName, catalogState);
     }
 }

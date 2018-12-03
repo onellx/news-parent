@@ -1,6 +1,8 @@
 package com.news.controllers;
 
 import com.news.annotation.SystemControllerLog;
+import com.news.pojo.Article;
+import com.news.service.ArticleService;
 import com.news.service.ManagerService;
 import com.news.pojo.Manager;
 import com.news.po.NewsResult;
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * @ClassName AdminLoginController
@@ -28,7 +31,10 @@ import javax.servlet.http.HttpSession;
 public class AdminLoginController {
 
     @Autowired
-    public ManagerService managerService;
+    private ManagerService managerService;
+
+    @Autowired
+    private ArticleService articleService;
 
     @RequestMapping(value = "/",method = RequestMethod.GET)
     public String loginHtml(Model model){
@@ -66,7 +72,9 @@ public class AdminLoginController {
     }
 
     @RequestMapping(value = "main",method = RequestMethod.GET)
-    public String main(){
+    public String main(Model model){
+        List<Article> articles= (List<Article>) articleService.findAutditAcrticle().getData();
+        model.addAttribute("articles",articles);
         return "index";
     }
 

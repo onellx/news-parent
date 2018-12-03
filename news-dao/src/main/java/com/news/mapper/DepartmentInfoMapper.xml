@@ -111,6 +111,10 @@
       #{departmentLikman,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.news.pojo.DepartmentInfo">
+
+    <selectKey keyProperty="departmentId" resultType="java.lang.Integer" order="AFTER">
+      select last_insert_id()
+    </selectKey>
     insert into department_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="departmentId != null">

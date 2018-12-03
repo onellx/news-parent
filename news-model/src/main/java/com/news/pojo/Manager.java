@@ -80,4 +80,6 @@ public class Manager {
     public void setManagerNumber(String managerNumber) {
         this.managerNumber = managerNumber == null ? null : managerNumber.trim();
     }
+
+
 }

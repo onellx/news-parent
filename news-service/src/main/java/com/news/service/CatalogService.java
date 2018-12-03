@@ -11,9 +11,13 @@ import com.news.pojo.Catalog;
  */
 public interface CatalogService {
 
-    NewsResult catalogList();
+    NewsResult findCatalogList();
 
     NewsResult updateCatalog(Catalog catalog);
 
     NewsResult findCatalogById(Integer id);
+
+    NewsResult saveCatalog(Catalog catalog);
+
+    NewsResult findCatalogByName(String cataologName);
 }

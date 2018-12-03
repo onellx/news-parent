@@ -3,24 +3,25 @@ package com.news.pojo;
 import java.util.Date;
 
 public class Article {
+    //id
     private Integer articleId;
-
+    //栏目号
     private Integer catalogId;
-
+    //新闻号
     private String articleNumber;
-
+    //新闻标题
     private String articleTitle;
-
+    //管理员号
     private Integer managerId;
-
+    //时间
     private Date articleTime;
-
+    //状态
     private String articleState;
-
+    //点击率
     private Integer articleClicks;
-
+    //点赞数
     private Integer articleLike;
-
+    //内容
     private String articleContent;
 
     public Integer getArticleId() {
