@@ -70,12 +70,12 @@
 </header>
 <aside class="Hui-aside">
 	<div class="menu_dropdown bk_2">
-		<shiro:hasPermission name="新闻管理">
+		<shiro:hasPermission name="查看新闻">
 		<dl id="menu-article">
 			<dt><i class="Hui-iconfont">&#xe616;</i> 文章管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="article-list" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
+					<li><a data-href="article-list/0" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
 			</ul>
 		</dd>
 	</dl>
@@ -90,17 +90,17 @@
 		</dd>
 	</dl>
 	</shiro:hasPermission>
-	<shiro:hasPermission name="评论管理">
+	<shiro:hasPermission name="查看评论">
 		<dl id="menu-comments">
 			<dt><i class="Hui-iconfont">&#xe622;</i> 评论管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="feedback-list.html" data-title="意见反馈" href="javascript:void(0)">评论列表</a></li>
+					<li><a data-href="comment-list.html" data-title="意见反馈" href="javascript:void(0)">评论列表</a></li>
 			</ul>
 		</dd>
 	</dl>
 	</shiro:hasPermission>
-	<shiro:hasPermission name="管理员管理">
+	<shiro:hasPermission name="查看管理员">
 		<dl id="menu-admin">
 			<dt><i class="Hui-iconfont">&#xe62d;</i> 管理员管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
@@ -113,7 +113,7 @@
 		</dd>
 	</dl>
 	</shiro:hasPermission>
-		<shiro:hasPermission name="栏目管理">
+		<shiro:hasPermission name="查看栏目">
 		<dl id="menu-system">
 			<dt><i class="Hui-iconfont">&#xe62e;</i> 栏目管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>

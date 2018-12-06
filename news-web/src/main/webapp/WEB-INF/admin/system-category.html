@@ -35,25 +35,29 @@
 </nav>
 <div class="page-container">
 	<div class="text-c">
-		<input type="text" name="" id="" placeholder="栏目名称、id" style="width:250px" class="input-text">
-		<button name="" id="" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+		<input type="text"  placeholder="栏目名称、id" id="searchinput" style="width:250px" class="input-text">
+		<button name="" id="btnserch" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
 	</div>
 	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<shiro:hasPermission name="栏目管理">
 		<span class="l">
 		<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 		<a class="btn btn-primary radius" onclick="system_category_add('添加栏目','system-category-add.html')" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 添加栏目</a>
 		</span>
+		</shiro:hasPermission>.
 		<span class="r">共有数据：<strong th:text="${catalogs.size()}"></strong> 条</span>
 	</div>
 	<div class="mt-20">
-		<table class="table table-border table-bordered table-hover table-bg table-sort">
+		<table id="catalogtable" class="table table-border table-bordered table-hover table-bg table-sort">
 			<thead>
 				<tr class="text-c">
 					<th width="25"><input type="checkbox" name="" value=""></th>
 					<th width="80">ID</th>
 					<th>栏目名称</th>
 					<th width="80">是否已启用</th>
+					<shiro:hasPermission name="栏目管理">
 					<th width="100">操作</th>
+					</shiro:hasPermission>
 				</tr>
 			</thead>
 			<tbody>
@@ -67,6 +71,7 @@
 					<td class="td-status" th:if="${catalog.getCatalogState()} eq '2' ">
 						<span class="label radius">已停用</span>
 					</td>
+					<shiro:hasPermission name="栏目管理">
 					<td class="f-14">
 						<b th:if="${catalog.getCatalogState()} eq '1' ">
 							<a style="text-decoration:none" th:onclick="'javascript:system_category_state('+this+','+${catalog.getCatalogId()}+',2);'" href="javascript:;" title="停用">
@@ -80,7 +85,9 @@
 						</b>
 
 						<a title="编辑" href="javascript:;" th:onclick="'javascript:system_category_edit('+${catalog.getCatalogId()}+',700,480);'" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
-						<a title="删除" href="javascript:;" th:onclick="'javascript:system_category_state('+this+','+${catalog.getCatalogId()}+',3);'" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
+						<a title="删除" href="javascript:;" th:onclick="'javascript:system_category_state('+this+','+${catalog.getCatalogId()}+',3);'" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
+					</td>
+					</shiro:hasPermission>
 				</tr>
 
 			</tbody>
@@ -98,12 +105,41 @@
 <script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript">
+    //实现功能,搜索显示,大小写搜索不会影响,模糊搜索
+    window.onload=function () {
+        var otab = document.getElementById('catalogtable');
+        var obtn = document.getElementById('btnserch');
+        var otext = document.getElementById('searchinput');
+        obtn.onclick=function () {
+            for (var i = 0; i < otab.tBodies[0].rows.length ; i++) {
+                var stab = otab.tBodies[0].rows[i].cells[1].innerHTML.toLowerCase();
+                var stab2 = otab.tBodies[0].rows[i].cells[2].innerHTML.toLowerCase();
+                var stext = otext.value.toLowerCase();
+                // toLowerCase()将英文全部转换成小写,为了用户在输入小写的时候仍然可以将内容搜索出来
+                var arr = stext.split(' ');
+                //split的作用将某一段字符串按照指定字符进行切割
+                otab.tBodies[0].rows[i].style.background = "";//确保在下一次搜索时上一次搜索不会影响这次搜索的结果
+                for (var j = 0; j < arr.length; j++) {
+                    if (stab.search(arr[j]) != -1) {
+                        otab.tBodies[0].rows[i].style.background = 'yellow';
+                    }
+                    if (stab2.search(arr[j]) != -1) {
+                        otab.tBodies[0].rows[i].style.background = 'yellow';
+                    }
+                }
+            }
+        }
+
+    };
+
+
+
 $('.table-sort').dataTable({
 	"aaSorting": [ 1, "desc" ],//默认第几个排序
 	"bStateSave": true,//状态保存
 	"aoColumnDefs": [
 	  //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
-	  {"orderable":false,"aTargets":[0,4]}// 制定列不参与排序
+	  {"orderable":false,"aTargets":[1,2]}// 制定列不参与排序
 	]
 });
 /*系统-栏目-添加*/

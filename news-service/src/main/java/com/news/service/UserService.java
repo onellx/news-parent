@@ -17,5 +17,8 @@ public interface UserService {
 
     NewsResult updateUser(UserInfo userInfo);
 
+    NewsResult findUserByEmail(String email);
+
+
 
 }

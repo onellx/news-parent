@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:sth="http://serendip.lumi">
+<head>
+<title th:text="${articlePo.getArticle().getArticleTitle()}"></title>
+<meta charset=UTF-8"utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<link rel="shortcut icon" href="http://www.yzipi.com/wp-content/themes/yzipi/images/favicon.ico" />
+<link rel='stylesheet' id='sytle-css'  href="../css/style.css-ver=4.9.8.css" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/style.css?ver=4.9.8" type='text/css' media='all' />
+<script type='text/javascript' src="../js/html5shiv.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/html5shiv.js?ver=4.9.8"></script>
+<script type='text/javascript' src="../js/selectivizr-min.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/selectivizr-min.js?ver=4.9.8"></script>
+<script type='text/javascript' src="../js/jquery.min.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/jquery.min.js?ver=4.9.8"></script>
+<script type='text/javascript' src="../js/jiazai.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/jiazai.js?ver=4.9.8"></script>
+</head>
+<body>
+<header class="header-web">
+  <nav>
+   <a href="javascript:void(0);"  class="logo" title="柚子皮" rel="home"><img th:src="${images.get(3).getImagePath()}"  alt="柚子皮Logo"></a>
+   <form method="get" class="search" action="http://www.yzipi.com/" >
+      <input class="text" type="text" name="s"  value="">   
+	   <input class="butto" value="搜索" type="submit">
+    </form>
+      <ul class="nav-list">
+          <li id="menu-item-1296" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1296"><a href="newscatalog.htmganhuo.htm" th:text="${catalogs[0].getCatalogName()}">干货</a></li>
+          <li id="menu-item-1295" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1295"><a href="category/duanzi.htm" th:text="${catalogs[1].getCatalogName()}">段子</a></li>
+          <li id="menu-item-127" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-127"><a href="yizpi1.htm" th:text="${catalogs[2].getCatalogName()}">D1.92</a></li>
+          <li id="menu-item-1357" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1357"><a href="about.htm" th:text="${catalogs[3].getCatalogName()}">关于</a></li>
+
+          <shiro:user>
+              <ll class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1357"><a > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<shiro:principal property="userName"/></a></ll>
+          </shiro:user>
+          <shiro:guest>
+              <ll class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1357"><a th:href="@{../tologin}"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;登录/注册</a></ll>
+          </shiro:guest>
+      </ul>
+  </nav>
+</header>
+<!--header-web-->  <article class="box-single">
+  
+      <h1 class="singletitle" th:text="${articlePo.getArticle().getArticleTitle()}"></h1>
+        <p class="p2" th:text="${#dates.format(articlePo.getArticle().getArticleTime(),'yyyy-MM-hh')+' - '+articlePo.getManager().getManagerName()}"></p>
+
+
+        <div class="content-text" >
+            <div th:utext="${articlePo.getArticle().getArticleContent()}" ></div>
+
+            <blockquote></blockquote>
+	   <p style="text-align: center;"><strong>- END -</strong></p>
+	   
+	   <div class="bdf">
+	   <div class="yue" th:text="${articlePo.getArticle().getArticleClicks()}"> </div>
+	      <div class="post-like">
+
+              <shiro:user>
+         <a th:href="@{'like/'+${articlePo.getArticle().getCatalogId()}}" data-action="ding" data-id="1484" class="favorite">
+             <span class="count" th:text="${articlePo.getArticle().getArticleLike()}"></span>
+        </a>
+              </shiro:user>
+    </div>
+<script type='text/javascript' src="wp-content/themes/yzipi/js/zan.js" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/zan.js"></script>
+</div>
+	</div>
+    <!--content_text-->
+        	
+					 <div class="comment" id="comments">
+      
+<div id="respond">
+    <shiro:guest>
+        <div>登录后可发表评论</div>
+        </shiro:guest>
+<shiro:user>
+  <form th:action="@{../comment}" method="post" id="commentform" >
+    <textarea name="commentContent" id=""  rows="3" tabindex="5" placeholder="你有什么要说的 ..." ></textarea>
+      <textarea name="comment" cols="100%" rows="4" style="display:none"></textarea>
+      <input type='hidden' name='articleId' th:value="${articlePo.getArticle().getArticleId()}" id='comment_post_ID' />
+      <input name="submit" type="submit" id="submit" tabindex="2" value="回复" />
+      </form>
+  </div>
+</shiro:user>
+
+
+
+
+<ol id="comment">
+
+  <li id="comment-639" th:each="commentPo:${commentPos}">
+      <span>
+          <img th:src="${images.get(4).getImagePath()}" class="avatar avatar-120" height="120" width="120">
+      </span>
+  <div class="mhcc">
+    <address th:text="${#dates.format(commentPo.getComment().getCommentTime(),'yyyy-MM-dd HH:mm:ss')+' - '+commentPo.getUserInfo().getUserName()}"></address>
+        <p th:text="${commentPo.getComment().getCommentContent()}"></p>
+  </div>
+  </li>
+
+
+</ol>
+    </div>	
+	
+	    <div class="xianguan"></div>
+    <!--相关文章-->
+  </article>
+<footer id="dibu-main">
+
+<div class="bottom">
+<ul class="botop">
+    <li id="menu-item-387" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-387"><a href="javascript:void(0);" >网站服务</a></li>
+<li id="menu-item-708" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-708"><a href="javascript:void(0);" >网站标识</a></li>
+<li id="menu-item-29" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-29"><a href="javascript:void(0);" >免责声明</a></li>
+<li id="menu-item-1434" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1434"><a href="javascript:void(0);">站长囧事</a></li>
+<li id="menu-item-1194" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1194"><a href="javascript:void(0);" >关于我们</a></li>
+</ul>
+	   
+	   <div class="botext"><a href="index.htm" tppabs="http://www.yzipi.com/">
+        柚子皮        </a> / <a href="javascript:void(0);"> 粤ICP备18005985号 </a></div>
+        <div class="tongji"><script> var _hmt = _hmt || []; (function() {   var hm = document.createElement("script");   hm.src = "../hm.baidu.com/hm.js-74b4edd4d9170ff3878a0902e06b4c08"/*tpa=https://hm.baidu.com/hm.js?74b4edd4d9170ff3878a0902e06b4c08*/;   var s = document.getElementsByTagName("script")[0];    s.parentNode.insertBefore(hm, s); })(); </script></div>
+    </div>
+  </div>
+  
+    <div class="off">
+  <div class="scroll" id="scroll" style="display:none;"> ︿ </div>
+  </div>
+  <script type="text/javascript">
+
+      function like_onclick(id){
+          alert(id);
+          $.ajax({
+              type: 'GET',
+              url: 'news/like/'+id,
+              success: function(data){
+                  if (data===false){
+                      window.location.reload();
+
+                  }else{
+                      window.location.reload();
+
+                  }
+              },
+              error:function(data) {
+                  console.log(data.msg);
+              }
+
+          });
+          window.location.reload();
+      }
+
+
+
+
+
+
+	$(function(){
+		showScroll();
+		function showScroll(){
+			$(window).scroll( function() { 
+				var scrollValue=$(window).scrollTop();
+				scrollValue > 500 ? $('div[class=scroll]').fadeIn():$('div[class=scroll]').fadeOut();
+			} );	
+			$('#scroll').click(function(){
+				$("html,body").animate({scrollTop:0},1224);	
+			});	
+		}
+	})
+	</script> 
+</footer>
+<!--dibu-->
+<script type='text/javascript' src="wp-includes/js/comment-reply.min.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-includes/js/comment-reply.min.js?ver=4.9.8"></script>
+<script type='text/javascript' src="wp-includes/js/wp-embed.min.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-includes/js/wp-embed.min.js?ver=4.9.8"></script>
+</body></html>

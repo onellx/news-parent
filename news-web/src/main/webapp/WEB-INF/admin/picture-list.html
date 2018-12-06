@@ -28,16 +28,18 @@
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 图片管理 <span class="c-gray en">&gt;</span> 图片列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
-	<div class="text-c"> 日期范围：
-		<input type="text" onfocus="WdatePicker({ maxDate:'#F{$dp.$D(\'logmax\')||\'%y-%M-%d\'}' })" id="logmin" class="input-text Wdate" style="width:120px;">
-		-
-		<input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'logmin\')}',maxDate:'%y-%M-%d' })" id="logmax" class="input-text Wdate" style="width:120px;">
-		<input type="text" name="" id="" placeholder=" 图片名称" style="width:250px" class="input-text">
-		<button name="" id="" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜图片</button>
+	<div class="text-c">
+		<input type="text" name="picinput" id="picinput" placeholder=" 图片名称" style="width:250px" class="input-text">
+		<button name="picbtn" id="picbtn" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜图片</button>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a class="btn btn-primary radius" onclick="picture_add('添加图片','picture-add.html')" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 添加图片</a></span> <span class="r">共有数据：<strong>54</strong> 条</span> </div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<span class="l">
+			<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius">
+				<i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+		</span>
+		<span class="r">共有数据：<strong th:text="${images.size()}"></strong> 条</span> </div>
 	<div class="mt-20">
-		<table class="table table-border table-bordered table-bg table-hover table-sort">
+		<table id="pictable" class="table table-border table-bordered table-bg table-hover table-sort">
 			<thead>
 				<tr class="text-c">
 					<th width="40"><input name="" type="checkbox" value=""></th>
@@ -103,7 +105,38 @@
 <script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
 <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript">
-$('.table-sort').dataTable({
+
+    //实现功能,搜索显示,大小写搜索不会影响,模糊搜索
+    window.onload=function () {
+        var otab = document.getElementById('pictable');//表格Id
+        var obtn = document.getElementById('picbtn');//搜索按钮
+        var otext = document.getElementById('picinput');//文本
+        obtn.onclick=function () {
+            for (var i = 0; i < otab.tBodies[0].rows.length ; i++) {
+                var stab = otab.tBodies[0].rows[i].cells[3].innerHTML.toLowerCase();
+
+                var stext = otext.value.toLowerCase();
+                // toLowerCase()将英文全部转换成小写,为了用户在输入小写的时候仍然可以将内容搜索出来
+                var arr = stext.split(' ');
+                //split的作用将某一段字符串按照指定字符进行切割
+                otab.tBodies[0].rows[i].style.background = "";//确保在下一次搜索时上一次搜索不会影响这次搜索的结果
+                for (var j = 0; j < arr.length; j++) {
+                    if (stab.search(arr[j]) != -1) {
+                        otab.tBodies[0].rows[i].style.background = 'yellow';
+                    }
+                }
+            }
+        }
+
+    };
+
+
+
+
+
+
+
+    $('.table-sort').dataTable({
 	"aaSorting": [ 1, "desc" ],//默认第几个排序
 	"bStateSave": true,//状态保存
 	"aoColumnDefs": [

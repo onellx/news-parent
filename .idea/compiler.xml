@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="news-common" />
         <module name="news-dao" />
+        <module name="news-fron-tweb" />
         <module name="news-model" />
         <module name="news-service" />
         <module name="news-web" />

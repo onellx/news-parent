@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -106,10 +104,11 @@ public class PictureController {
 
 
 
-    @RequestMapping(value = "pic/upload",method = RequestMethod.POST)
+    @RequestMapping(value = "pic/upload/{id}",method = RequestMethod.POST)
     @ResponseBody
-    public String picUpload(/*MultipartFile uploadFile*/MultipartHttpServletRequest request) {
+    public String picUpload(/*MultipartFile uploadFile*/MultipartHttpServletRequest request,@PathVariable Integer id) {
         System.out.println("start");
+        System.out.println(id);
         MultiValueMap<String,MultipartFile> map = request.getMultiFileMap();
         System.out.println(map.size());
         List<MultipartFile> files = map.get("file");
@@ -125,17 +124,54 @@ public class PictureController {
                 FastDFSClient fastDFSClient = new FastDFSClient("classpath:resources/fastdfs.conf");
                 String url = fastDFSClient.uploadFile(uploadFile.getBytes(), extName);
                 url = IMAGE_SERVER_URL + url;
+                System.out.println(url);
                 result.add("error", 0);
-                result.add("url", url);
+                result.add("data", url);
+                Image image=new Image();
+                image.setImageId(id);
+                image.setImagePath(url);
+                this.picture_update(image);
             }
             return JsonUtils.objectToJson(result);
         } catch (Exception e) {
             e.printStackTrace();
             //Map result = new HashMap<>();
-            result.put("error", 1);
-            result.put("message", "图片上传失败");
+            result.add("error", 1);
+            result.add("message", "图片上传失败");
             return JsonUtils.objectToJson(result);
         }
     }
+
+    @RequestMapping("/pic/uploadeditor")
+    @ResponseBody
+    public String picUploadEditor(@RequestParam(value="myFileName") MultipartFile uploadFile) {
+        try {
+            //接收上传的文件
+            //取扩展名
+            String originalFilename = uploadFile.getOriginalFilename();
+            String extName = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            //上传到图片服务器
+            FastDFSClient fastDFSClient = new FastDFSClient("classpath:resources/fastdfs.conf");
+            String url = fastDFSClient.uploadFile(uploadFile.getBytes(), extName);
+            url = IMAGE_SERVER_URL + url;
+            //响应上传图片的url
+            Map result = new HashMap<>();
+            result.put("errno", 0);
+            result.put("data", url);
+            System.out.println(url);
+            return JsonUtils.objectToJson(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map result = new HashMap<>();
+            result.put("errno", 1);
+            result.put("message", "图片上传失败");
+            return JsonUtils.objectToJson(result);
+        }
+
+    }
+
+
+
+
 
 }

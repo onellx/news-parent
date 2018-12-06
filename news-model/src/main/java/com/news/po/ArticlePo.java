@@ -18,6 +18,8 @@ public class ArticlePo {
 
     private Catalog catalog;
 
+
+
     public Article getArticle() {
         return article;
     }

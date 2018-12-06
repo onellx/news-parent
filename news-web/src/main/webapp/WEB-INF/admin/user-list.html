@@ -28,19 +28,24 @@
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 用户中心 <span class="c-gray en">&gt;</span> 用户管理 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="pd-20">
-  <div class="text-c"> 日期范围：
-    <input type="text" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}'})" id="datemin" class="input-text Wdate" style="width:120px;">
-    -
-    <input type="text" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d'})" id="datemax" class="input-text Wdate" style="width:120px;">
-    <input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、电话、邮箱" id="" name=""><button type="submit" class="btn btn-success" id="" name=""><i class="icon-search"></i> 搜用户</button>
+  <div class="text-c">
+    <input type="text" class="input-text" style="width:250px" placeholder="输入用户名称、电话、邮箱" id="userinput" name="userinput">
+    <button type="submit" class="btn btn-success" id="usertbtn" name="usertbtn">
+      <i class="icon-search"></i> 搜用户</button>
 
   </div>
   <div class="cl pd-5 bg-1 bk-gray mt-20">
-    <span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="icon-trash"></i> 批量删除</a>
-    <a href="javascript:;" onclick="user_add('550','','添加用户','user-add.html')" class="btn btn-primary radius"><i class="icon-plus"></i> 添加用户</a></span>
+    <span class="l">
+      <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius">
+        <i class="icon-trash"></i> 批量删除</a>
+
+    </span>
     <span class="r">共有数据：<strong th:text="${userInfos.size()}"></strong> 条</span>
   </div>
-  <table class="table table-border table-bordered table-hover table-bg table-sort">
+  <div class="mt-20">
+
+
+  <table id="usertable" class="table table-border table-bordered table-hover table-bg table-sort">
     <thead>
       <tr class="text-c">
         <th width="25"><input type="checkbox" name="" value=""></th>
@@ -85,6 +90,7 @@
       </tr>
     </tbody>
   </table>
+  </div>
   <div id="pageNav" class="pageNav"></div>
 </div>
 <!--_footer 作为公共模版分离出去-->
@@ -99,7 +105,45 @@
 <script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
 <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script>
 <script type="text/javascript">
-window.onload = (function(){
+
+
+    //实现功能,搜索显示,大小写搜索不会影响,模糊搜索
+    window.onload=function () {
+        alert(";");
+        var otab = document.getElementById('usertable');//表格Id
+        var obtn = document.getElementById('usertbtn');//搜索按钮
+        var otext = document.getElementById('userinput');//文本
+        obtn.onclick=function () {
+            alert("s");
+            for (var i = 0; i < otab.tBodies[0].rows.length ; i++) {
+                var stab = otab.tBodies[0].rows[i].cells[2].innerHTML.toLowerCase();
+                var stab2 = otab.tBodies[0].rows[i].cells[3].innerHTML.toLowerCase();
+                var stab3 = otab.tBodies[0].rows[i].cells[4].innerHTML.toLowerCase();
+                var stext = otext.value.toLowerCase();
+                // toLowerCase()将英文全部转换成小写,为了用户在输入小写的时候仍然可以将内容搜索出来
+                var arr = stext.split(' ');
+                //split的作用将某一段字符串按照指定字符进行切割
+                otab.tBodies[0].rows[i].style.background = "";//确保在下一次搜索时上一次搜索不会影响这次搜索的结果
+                for (var j = 0; j < arr.length; j++) {
+                    if (stab.search(arr[j]) != -1) {
+                        otab.tBodies[0].rows[i].style.background = 'yellow';
+                    }
+                    if (stab2.search(arr[j]) != -1) {
+                        otab.tBodies[0].rows[i].style.background = 'yellow';
+                    }
+                    if (stab3.search(arr[j]) != -1) {
+                        otab.tBodies[0].rows[i].style.background = 'yellow';
+                    }
+                }
+            }
+        }
+
+    };
+
+
+
+
+    window.onload = (function(){
     // optional set
     pageNav.pre="&lt;上一页";
     pageNav.next="下一页&gt;";
@@ -108,20 +152,16 @@ window.onload = (function(){
     //重写分页状态,跳到第三页,总页33页
     pageNav.go(1,13);
 });
-$('.table-sort').dataTable({
-	"lengthMenu":false,//显示数量选择 
-	"bFilter": false,//过滤功能
-	"bPaginate": false,//翻页信息
-	"bInfo": false,//数量信息
-	"aaSorting": [ 1, "desc" ],//默认第几个排序
-	"bStateSave": true,//状态保存
-	"aoColumnDefs": [
-	  //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
-	  {"orderable":false,"aTargets":[0,7]}// 制定列不参与排序
-	]
-});
 
 
+    $('.table-sort').dataTable({
+        "aaSorting": [ 1, "desc" ],//默认第几个排序
+        "bStateSave": true,//状态保存
+        "aoColumnDefs": [
+            //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+            {"orderable":false,"aTargets":[0,6,7]}// 制定列不参与排序
+        ]
+    });
 
 
 /*用户-改变状态*/

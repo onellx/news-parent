@@ -5,6 +5,7 @@ import com.news.po.NewsResult;
 import com.news.pojo.UserInfo;
 import com.news.pojo.UserInfoExample;
 import com.news.service.UserService;
+import com.news.utils.Encrypt;
 import com.news.utils.StateListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public NewsResult saveUser(UserInfo userInfo) {
+        String md5Pass = Encrypt.md5(userInfo.getUserPasswd(), userInfo.getUserEmail());
+        userInfo.setUserPasswd(md5Pass);
         userInfo.setUserState("1");
         userInfo.setUserTime(new Date());
         userInfoMapper.insertSelective(userInfo);
@@ -46,4 +49,14 @@ public class UserServiceImpl implements UserService {
         userInfoMapper.updateByPrimaryKeySelective(userInfo);
         return NewsResult.ok();
     }
+
+    @Override
+    public NewsResult findUserByEmail(String email) {
+        UserInfoExample userInfoExample=new UserInfoExample();
+        UserInfoExample.Criteria criteria = userInfoExample.createCriteria();
+        criteria.andUserEmailEqualTo(email);
+        List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
+        return NewsResult.ok(userInfos);
+    }
+
 }

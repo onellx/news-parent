@@ -14,6 +14,7 @@
         <module>news-model</module>
         <module>news-web</module>
         <module>news-dao</module>
+        <module>news-fron-tweb</module>
     </modules>
     <!-- 集中定义依赖版本号 -->
     <properties>

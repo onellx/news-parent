@@ -24,4 +24,12 @@ public interface ArticleService {
     NewsResult findAutditAcrticle();
 
     NewsResult findAutditAcrticlePo();
+
+    NewsResult findArticlePoByCatalogId(Integer id);
+
+    NewsResult findArticlePoById(Integer id);
+
+    NewsResult findArticleByClik();
+
+
 }

@@ -1,0 +1,86 @@
+@media only screen and (min-width: 900px) {
+
+/*主题*/
+#app {
+	width: 1244px;
+	overflow:hidden;
+	padding:40px 0px;
+	background:#d6623d;
+	margin:0 auto;margin-top:91px;margin-bottom:-90px;
+}
+.alef{width:364px;margin-left:75px;float:left;margin-top:40px;}
+.alef h1{font-weight:normal;color:#fff;width:100%;font-size:32px;text-align:center;font-style:italic}
+.alef p{line-height:35px;margin-top:18px;color:#fff;}
+.alef ul{list-style:disc;margin-left:30px;}
+.alef li{margin-top:30px;color:#fff;}
+/*QQ咨询*/	
+.py{display:none;}
+.qqq{width:100%;
+}	
+.qqq a{display: block;
+	height: 40px;
+	line-height:42px;border-radius:2px;
+	text-align: center;
+	width:130px;
+	font-size: 16px;transition: all 0.3s;border-radius:50px;
+	color:#fff;
+	margin: 30px 0px  0px 40px ;border:2px solid #fff;
+}
+.qqq a:hover{color: #fff;}	
+
+#slider { width:650px; overflow:hidden;float:left; margin-left:75px;}
+
+div#slideshow { overflow:hidden; }
+.slider-item { width: 100% !important; height: auto; }
+.slider-item img{ width: 100% !important; height: auto; }
+#slider_controls {position: relative; margin:0 auto; z-index: 1000; }
+#slider_controls ul {margin-top:8px; }
+#slider_controls ul li { float:left; display: block; width:158px;height:auto;margin-right:4px;}
+#slider_controls ul li a {  outline: none; }
+#slider_controls ul li a img{display: block; width:100%;height:auto;}
+#slider_controls ul li a:focus { outline: none; }
+
+
+}
+
+@media only screen and (max-width:900px) {
+/*主题*/
+#app {
+	width: 100%;
+overflow:hidden;
+	background:#d6623d;padding:25px 0px;
+
+}
+.alef{width:88%;margin:0 auto;}
+.alef h1{color:#fff;width:100%;font-size:32px;text-align:center;font-style:italic}
+.alef p{line-height:35px;margin-top:18px;color:#fff;}
+.alef ul{list-style:disc;margin:0px 0px 30px 25px;}
+.alef li{margin-top:25px;color:#fff;}
+/*QQ咨询*/	
+.px{display:none;}
+.qqq{width:100%;
+}	
+.qqq a{display: block;
+	height: 40px;
+	line-height:42px;border-radius:2px;
+	text-align: center;
+	width:130px;
+	font-size: 16px;transition: all 0.3s;border-radius:50px;
+	color:#fff;
+	margin: 0 auto; border:2px solid #fff;
+}
+.qqq a:hover{color: #fff;}	
+
+#slider { width:90%; overflow:hidden;margin:0 auto;margin-top:25px;}
+
+div#slideshow { overflow:hidden; }
+.slider-item { width: 100% !important; height: auto; }
+.slider-item img{ width: 100% !important; height: auto; }
+#slider_controls {position: relative; margin:0 auto; z-index: 1000; }
+#slider_controls ul {margin-top:8px; }
+#slider_controls ul li { float:left; display: block; width:24%;height:auto;margin-right:0.8%;}
+#slider_controls ul li a {  outline: none; }
+#slider_controls ul li a img{display: block; width:100%;height:auto;}
+#slider_controls ul li a:focus { outline: none; }
+
+}

@@ -35,6 +35,7 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public NewsResult updatePicture(Image image) {
+        image.setImageDate(new Date());
         imageMapper.updateByPrimaryKeySelective(image);
         return NewsResult.ok();
     }

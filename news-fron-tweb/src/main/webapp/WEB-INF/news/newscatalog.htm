@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:sth="http://serendip.lumi">
+<head>
+<title >柚子皮</title>
+<meta charset=UTF-8"utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<meta name="description" content="干货" />
+<meta name="keywords" content="" />
+<link rel="shortcut icon" href="images/favicon.ico" />
+<link rel='stylesheet' id='sytle-css'  href="../../css/style.css-ver=4.9.8.css" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/style.css?ver=4.9.8" type='text/css' media='all' />
+<script type='text/javascript' src="../../js/html5shiv.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/html5shiv.js?ver=4.9.8"></script>
+<script type='text/javascript' src="../../js/selectivizr-min.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/selectivizr-min.js?ver=4.9.8"></script>
+<script type='text/javascript' src="../../js/jquery.min.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/jquery.min.js?ver=4.9.8"></script>
+<script type='text/javascript' src="../../js/jiazai.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-content/themes/yzipi/js/jiazai.js?ver=4.9.8"></script>
+</head>
+<body>
+<header class="header-web">
+  <nav>
+   <a href="javascript:void(0);"  class="logo" title="柚子皮" rel="home"><img th:src="${images.get(3).getImagePath()}" alt="柚子皮Logo"></a>
+   <form method="get" class="search" action="http://www.yzipi.com/" >
+      <input class="text" type="text" name="s"  value="">   
+	   <input class="butto" value="搜索" type="submit">
+    </form>
+    <ul class="nav-list">
+	  <li id="menu-item-1296" class="menu-item menu-item-type-taxonomy menu-item-object-category current-menu-item menu-item-1296"><a th:href="@{'../../news/catalog/'+${catalogs[0].getCatalogId()}}" tppabs="http://www.yzipi.com/category/ganhuo">干货</a></li>
+<li id="menu-item-1295" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1295"><a th:href="@{'../../news/catalog/'+${catalogs[1].getCatalogId()}}" tppabs="http://www.yzipi.com/category/duanzi">段子</a></li>
+<li id="menu-item-127" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-127"><a th:href="@{'../../news/catalog/'+${catalogs[2].getCatalogId()}}" tppabs="http://www.yzipi.com/yizpi1">D1.92</a></li>
+<li id="menu-item-1357" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1357"><a th:href="@{'../../news/catalog/'+${catalogs[3].getCatalogId()}}" tppabs="http://www.yzipi.com/about">关于</a></li>
+
+        <shiro:user>
+            <ll class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1357"><a > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<shiro:principal property="userName"/></a></ll>
+        </shiro:user>
+        <shiro:guest>
+            <ll class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1357"><a th:href="@{../../tologin}"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;登录/注册</a></ll>
+        </shiro:guest>
+    </ul>	
+  </nav>
+</header>
+<!--header-web--><div id="container-page">
+  <article class="box">
+
+      <section class="list" th:each="newpo:${newsPos}">
+       <span th:if="${newpo.getUrl()!=null}">
+           <span class="titleimg">
+               <a th:href="@{'../../news/'+${newpo.getArticle().getArticleId()}}" target="_blank">
+                    <img width="1000" height="556" th:src="${newpo.getUrl()}" class="attachment-thumbnail size-thumbnail wp-post-image" alt="" sizes="(max-width: 1000px) 100vw, 1000px" />
+               </a>
+           </span>
+          <div class=" mecc">
+            <h2 class="mecctitle">
+                <a th:href="@{'../../news/'+${newpo.getArticle().getArticleId()}}" target="_blank" th:text="${newpo.getArticle().getArticleTitle()}"></a>
+            </h2>
+            <time th:text="${#dates.format(newpo.getArticle().getArticleTime(),'yyyy-MM-dd')}" ></time>
+          </div>
+           <div class=" zaiyao">
+          <span th:if="${newpo.getArticle().getArticleContent().length() ge 50}">
+                <p th:text="${newpo.getArticle().getArticleContent().substring(0,50)+'......'}"></p>
+          </span>
+          <span th:if="${newpo.getArticle().getArticleContent().length() lt 50}">
+            <p th:text="${newpo.getArticle().getArticleContent()}"></p>
+          </span>
+
+      </div>
+       </span>
+
+          <span th:if="${newpo.getUrl()==null}">
+          <div class=" mucc">
+            <h2 class="mecctitle">
+                <a th:href="@{'../../news/'+${newpo.getArticle().getArticleId()}}" target="_blank" th:text="${newpo.getArticle().getArticleTitle()}"></a>
+            </h2>
+            <time th:text="${#dates.format(newpo.getArticle().getArticleTime(),'yyyy-MM-dd')}" ></time>
+          </div>
+           <div class=" zuiyao">
+          <span th:if="${newpo.getArticle().getArticleContent().length() ge 50}">
+                <p th:text="${newpo.getArticle().getArticleContent().substring(0,50)+'......'}"></p>
+          </span>
+          <span th:if="${newpo.getArticle().getArticleContent().length() lt 50}">
+            <p th:text="${newpo.getArticle().getArticleContent()}"></p>
+          </span>
+
+      </div>
+       </span>
+
+
+      </section>
+
+
+              <div class="posts-nav">
+
+
+              </div>
+ </article>
+     <div id="post-read-more">  
+    <a href="ganhuo/page/2.htm" tppabs="http://www.yzipi.com/category/ganhuo/page/2" >看更多</a>  
+</div>  
+<style>#post-read-more{display:block;}</style>
+ <script type="text/javascript"> 
+    <!-- 
+            //平台、设备和操作系统 
+            var system = { 
+                win: false, 
+                mac: false, 
+                xll: false, 
+                ipad:false 
+            }; 
+            //检测平台 
+            var p = navigator.platform; 
+            system.win = p.indexOf("Win") == 0; 
+            system.mac = p.indexOf("Mac") == 0; 
+            system.x11 = (p == "X11") || (p.indexOf("Linux") == 0); 
+            system.ipad = (navigator.userAgent.match(/iPad/i) != null)?true:false; 
+            //跳转语句
+            if (system.win || system.mac || system.xll||system.ipad) { 
+             document.getElementById("post-read-more").style.display="none";  
+     
+            } else { 
+     
+
+            } 
+    --> 
+    </script>    <aside id="sitebar">
+
+
+    <div class="sitebar_list">
+        <a href="gardenltheme.htm" tppabs="http://www.yzipi.com/gardenltheme" target="_blank">
+            <img width="364" height="182" th:src="${images.get(1).getImagePath()}"  class="image wp-image-1780  attachment-full size-full" alt="" style="max-width: 100%; height: auto;" />
+        </a>
+    </div>
+    <div class="sitebar_list">
+        <h4 class="sitebar_title">网站标签</h4>
+        <div class="tagcloud">
+              <span th:each="catalog:${catalogs}">
+                 <a th:href="@{'../../news/catalog/'+${catalog.getCatalogId()}}"  class="tag-cloud-link tag-link-20 tag-link-position-1" style="font-size: 15px;" th:text="${catalog.getCatalogName()}"></a>
+              </span>
+        </div>
+    </div>
+    <a href="javascript:void(0);"><img class="totop" th:src="${images.get(2).getImagePath()}" alt="" /></a>
+
+
+   <script type="text/javascript"> 
+$(function() { 
+    var elm = $('.totop'); 
+    var startPos = $(elm).offset().top; 
+    $.event.add(window, "scroll", function() { 
+        var p = $(window).scrollTop(); 
+        $(elm).css('position',((p) > startPos) ? 'fixed' : 'static'); 
+        $(elm).css('top',((p) > startPos) ? '0px' : ''); 
+    }); 
+}); 
+</script>
+</aside></div>
+<!--Container End-->
+<footer id="dibu-main">
+	  <div class="bottomlist"></div>
+	
+	   <div class="bottom">
+           <ul class="botop">
+               <li id="menu-item-387" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-387"><a href="javascript:void(0);" >网站服务</a></li>
+               <li id="menu-item-708" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-708"><a href="javascript:void(0);" >网站标识</a></li>
+               <li id="menu-item-29" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-29"><a href="javascript:void(0);" >免责声明</a></li>
+               <li id="menu-item-1434" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1434"><a href="javascript:void(0);">站长囧事</a></li>
+               <li id="menu-item-1194" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1194"><a href="javascript:void(0);" >关于我们</a></li>
+           </ul>
+           <div class="botext"><a href="index.htm" tppabs="http://www.yzipi.com/">
+               柚子皮        </a> / <a href="javascript:void(0);"> 粤ICP备18005985号 </a></div>
+        <div class="tongji"><script> var _hmt = _hmt || []; (function() {   var hm = document.createElement("script");   hm.src = "../../hm.baidu.com/hm.js-74b4edd4d9170ff3878a0902e06b4c08"/*tpa=https://hm.baidu.com/hm.js?74b4edd4d9170ff3878a0902e06b4c08*/;   var s = document.getElementsByTagName("script")[0];    s.parentNode.insertBefore(hm, s); })(); </script></div>
+    </div>
+  </div>
+  
+    <div class="off">
+  <div class="scroll" id="scroll" style="display:none;"> ︿ </div>
+  </div>
+  <script type="text/javascript">
+	$(function(){
+		showScroll();
+		function showScroll(){
+			$(window).scroll( function() { 
+				var scrollValue=$(window).scrollTop();
+				scrollValue > 500 ? $('div[class=scroll]').fadeIn():$('div[class=scroll]').fadeOut();
+			} );	
+			$('#scroll').click(function(){
+				$("html,body").animate({scrollTop:0},1224);	
+			});	
+		}
+	})
+	</script> 
+</footer>
+<!--dibu-->
+<script type='text/javascript' src="../wp-includes/js/wp-embed.min.js-ver=4.9.8" tppabs="http://www.yzipi.com/wp-includes/js/wp-embed.min.js?ver=4.9.8"></script>
+</body></html>

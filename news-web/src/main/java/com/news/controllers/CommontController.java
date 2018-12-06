@@ -20,6 +20,6 @@ public class CommontController {
     public String commontList(Model model){
 
 
-        return "feedback-list";
+        return "comment-list";
     }
 }

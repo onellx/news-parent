@@ -6,10 +6,13 @@ import com.news.po.NewsResult;
 import com.news.pojo.Article;
 import com.news.pojo.Catalog;
 import com.news.pojo.Manager;
+import com.news.pojo.Role;
 import com.news.service.ArticleService;
 import com.news.service.CatalogService;
 import com.news.utils.JsonUtils;
+import com.news.utils.SysConstant;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,11 +40,19 @@ public class ArticleController {
     private CatalogService catalogService;
 
 
-    @RequestMapping(value = "article-list",method = RequestMethod.GET)
+    @RequestMapping(value = "article-list/{cid}",method = RequestMethod.GET)
     @SystemControllerLog(description = "获取文章列表")
-    public String articleList(Model model){
-        List<ArticlePo> articlePos= (List<ArticlePo>) articleService.findArticlePoList().getData();
+    public String articleList(Model model,@PathVariable Integer cid){
+        List<Catalog> catalogs= (List<Catalog>) catalogService.findCatalogList().getData();
+        List<ArticlePo> articlePos=null;
+        if(cid==0){
+            articlePos= (List<ArticlePo>) articleService.findArticlePoList().getData();
+        }else {
+            articlePos= (List<ArticlePo>) articleService.findArticlePoByCatalogId(cid).getData();
+        }
+        model.addAttribute("cid",cid);
         model.addAttribute("articlePos",articlePos);
+        model.addAttribute("catalogs",catalogs);
         return "article-list";
     }
 
@@ -82,7 +95,13 @@ public class ArticleController {
         Subject subject=SecurityUtils.getSubject();
         Manager manager = (Manager) subject.getPrincipal();
         article.setManagerId(manager.getManagerId());
-
+        Role role = (Role) subject.getSession().getAttribute(SysConstant.CURRENT_MANAGER_ROLE);
+        System.out.println(role.getRoleId());
+        if (role.getRoleId()==3){
+            article.setArticleState("0");
+        }else {
+            article.setArticleState("1");
+        }
         NewsResult newsResult = articleService.saveArticle(article);
         if (newsResult.getStatus()==200){
             return "true";
@@ -97,4 +116,5 @@ public class ArticleController {
         model.addAttribute("catalogs",catalogs);
         return "article-add";
     }
+
 }
