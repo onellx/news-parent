@@ -73,8 +73,15 @@ public class AdminLoginController {
 
     @RequestMapping(value = "main",method = RequestMethod.GET)
     public String main(Model model){
-        List<Article> articles= (List<Article>) articleService.findAutditAcrticle().getData();
-        model.addAttribute("articles",articles);
+        Subject subject=SecurityUtils.getSubject();
+        Manager m = (Manager) subject.getPrincipal();
+        if (m.getDepartmentId()==1){
+            List<Article> articles= (List<Article>) articleService.findAutditAcrticle().getData();
+            model.addAttribute("articles",articles);
+        }else {
+            List<Article> articles= (List<Article>) articleService.findAuditArticlePoListByDid(m.getDepartmentId()).getData();
+            model.addAttribute("articles",articles);
+        }
         return "index";
     }
 

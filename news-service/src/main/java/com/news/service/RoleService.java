@@ -1,6 +1,7 @@
 package com.news.service;
 
 import com.news.po.NewsResult;
+import com.news.pojo.Role;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ import java.util.List;
 public interface RoleService {
 
     NewsResult findRoleList();
+
+    NewsResult findRoleListByRids(List<Integer> rids);
 
 
 }

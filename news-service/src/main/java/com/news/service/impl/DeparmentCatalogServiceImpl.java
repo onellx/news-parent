@@ -61,6 +61,15 @@ public class DeparmentCatalogServiceImpl implements DeparmentCatalogService {
     }
 
     @Override
+    public NewsResult findDepartmentCatalofListByDid(Integer did) {
+        DepartCatalogExample departCatalogExample=new DepartCatalogExample();
+        DepartCatalogExample.Criteria criteria = departCatalogExample.createCriteria();
+        criteria.andDepartmentIdEqualTo(did);
+        List<DepartCatalog> departCatalogs = departCatalogMapper.selectByExample(departCatalogExample);
+        return NewsResult.ok(departCatalogs);
+    }
+
+    @Override
     public NewsResult deleteDepartmentCatalogByDid(Integer did) {
         DepartCatalogExample departCatalogExample=new DepartCatalogExample();
         DepartCatalogExample.Criteria criteria = departCatalogExample.createCriteria();

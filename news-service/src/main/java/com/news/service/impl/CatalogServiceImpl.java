@@ -4,6 +4,7 @@ import com.news.mapper.CatalogMapper;
 import com.news.po.NewsResult;
 import com.news.pojo.Catalog;
 import com.news.pojo.CatalogExample;
+import com.news.pojo.DepartCatalog;
 import com.news.pojo.Manager;
 import com.news.service.CatalogService;
 import com.news.service.DeparmentCatalogService;
@@ -79,5 +80,25 @@ public class CatalogServiceImpl implements CatalogService {
             return NewsResult.build(400,"该栏目不存在");
         }
         return NewsResult.ok();
+    }
+
+    @Override
+    public NewsResult findCatalogListByCids(List<Integer> cids) {
+        CatalogExample catalogExample=new CatalogExample();
+        CatalogExample.Criteria criteria1 = catalogExample.createCriteria();
+        List<Catalog> catalogs =new ArrayList<Catalog>();
+        criteria1.andCatalogIdIn(cids);
+        catalogs = catalogMapper.selectByExample(catalogExample);
+        return NewsResult.ok(catalogs);
+    }
+
+    @Override
+    public NewsResult findCatalogListByDid(Integer did) {
+        List<DepartCatalog> departCatalogs= (List<DepartCatalog>) deparmentCatalogService.findDepartmentCatalofListByDid(did).getData();
+        List<Integer> cid=new ArrayList<>();
+        for (DepartCatalog departCatalog:departCatalogs){
+            cid.add(departCatalog.getCatalogId());
+        }
+        return this.findCatalogListByCids(cid);
     }
 }

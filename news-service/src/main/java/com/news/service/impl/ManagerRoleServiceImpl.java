@@ -40,4 +40,14 @@ public class ManagerRoleServiceImpl implements ManagerRoleService {
         managerRoleMapper.deleteByExample(managerRoleExample);
         return NewsResult.ok();
     }
+
+    @Override
+    public NewsResult findManagerRoleByMid(Integer mid) {
+        //先通过用户id获取用户的角色
+        ManagerRoleExample managerRoleExample=new ManagerRoleExample();
+        ManagerRoleExample.Criteria criteria = managerRoleExample.createCriteria();
+        criteria.andManagerIdEqualTo(mid);
+        List<ManagerRole> managerRoles = managerRoleMapper.selectByExample(managerRoleExample);
+        return NewsResult.ok(managerRoles);
+    }
 }

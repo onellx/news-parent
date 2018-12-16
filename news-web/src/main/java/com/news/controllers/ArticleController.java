@@ -9,6 +9,7 @@ import com.news.pojo.Manager;
 import com.news.pojo.Role;
 import com.news.service.ArticleService;
 import com.news.service.CatalogService;
+import com.news.service.DeparmentCatalogService;
 import com.news.utils.JsonUtils;
 import com.news.utils.SysConstant;
 import org.apache.shiro.SecurityUtils;
@@ -38,6 +39,8 @@ public class ArticleController {
     private ArticleService articleService;
     @Autowired
     private CatalogService catalogService;
+    @Autowired
+    private DeparmentCatalogService deparmentCatalogService;
 
 
     @RequestMapping(value = "article-list/{cid}",method = RequestMethod.GET)
@@ -56,6 +59,26 @@ public class ArticleController {
         return "article-list";
     }
 
+    @RequestMapping(value = "article-department-list/{cid}",method = RequestMethod.GET)
+    @SystemControllerLog(description = "获取部门文章列表")
+    public String articleListByDepartment(Model model,@PathVariable Integer cid){
+        Subject subject=SecurityUtils.getSubject();
+        Manager manager = (Manager) subject.getPrincipal();
+        List<Catalog> catalogs= (List<Catalog>) catalogService.findCatalogListByDid(manager.getDepartmentId()).getData();
+        List<ArticlePo> articlePos=null;
+        if(cid==0){
+            articlePos= (List<ArticlePo>) articleService.findArticlePoListByDid(manager.getDepartmentId()).getData();
+        }else {
+            articlePos= (List<ArticlePo>) articleService.findArticlePoByCatalogId(cid).getData();
+        }
+        model.addAttribute("cid",cid);
+        model.addAttribute("catalogs",catalogs);
+        model.addAttribute("articlePos",articlePos);
+        return "article-department-list";
+    }
+
+
+
     @RequestMapping(value="article/upatestate",method = RequestMethod.POST,produces="application/json;charset=UTF-8")
     @ResponseBody
     public String changestate( String id,String state){
@@ -72,10 +95,19 @@ public class ArticleController {
     @RequestMapping(value = "article-edit/{id}",method = RequestMethod.GET)
     @SystemControllerLog(description = "修改新闻信息页面")
     public String editCatalog(Model model, @PathVariable Integer id){
-        Article article= (Article) articleService.findArticleById(id).getData();
-        List<Catalog> catalogs = (List<Catalog>) catalogService.findCatalogList().getData();
-        model.addAttribute("article",article);
-        model.addAttribute("catalogs",catalogs);
+        Subject subject=SecurityUtils.getSubject();
+        Manager manager = (Manager) subject.getPrincipal();
+        if (manager.getDepartmentId()==1){
+            Article article= (Article) articleService.findArticleById(id).getData();
+            List<Catalog> catalogs = (List<Catalog>) catalogService.findCatalogList().getData();
+            model.addAttribute("article",article);
+            model.addAttribute("catalogs",catalogs);
+        }else{
+            Article article= (Article) articleService.findArticleById(id).getData();
+            List<Catalog> catalogs = (List<Catalog>) catalogService.findCatalogListByDid(manager.getDepartmentId()).getData();
+            model.addAttribute("article",article);
+            model.addAttribute("catalogs",catalogs);
+        }
         return "article-edit";
     }
 
@@ -112,8 +144,16 @@ public class ArticleController {
     @RequestMapping(value = "article-add",method = RequestMethod.GET)
     @SystemControllerLog(description = "添加新闻信息页面")
     public String articleToAdd(Model model){
-        List<Catalog> catalogs = (List<Catalog>) catalogService.findCatalogList().getData();
-        model.addAttribute("catalogs",catalogs);
+        Subject subject=SecurityUtils.getSubject();
+        Manager manager = (Manager) subject.getPrincipal();
+        if(manager.getDepartmentId()==1){
+            List<Catalog> catalogs = (List<Catalog>) catalogService.findCatalogList().getData();
+            model.addAttribute("catalogs",catalogs);
+        }else{
+
+            List<Catalog> catalogs = (List<Catalog>) catalogService.findCatalogListByDid(manager.getDepartmentId()).getData();
+            model.addAttribute("catalogs",catalogs);
+        }
         return "article-add";
     }
 

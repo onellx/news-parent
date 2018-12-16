@@ -11,12 +11,30 @@ import com.news.pojo.Image;
  */
 public interface PictureService {
 
-
+    /**
+     *查找图片列表
+     * @return
+     */
     NewsResult findPictureList();
 
+    /**
+     *更新图片信息
+     * @param image 图片信息
+     * @return
+     */
     NewsResult updatePicture(Image image);
 
+    /**
+     *根据图片ID查找图片信息
+     * @param id 图片id
+     * @return
+     */
     NewsResult findPictureById(Integer id);
 
+    /**
+     *添加图片
+     * @param image 图片信息
+     * @return
+     */
     NewsResult savePicture(Image image);
 }

@@ -4,8 +4,11 @@ import com.news.annotation.SystemControllerLog;
 import com.news.po.CommentPo;
 import com.news.po.NewsResult;
 import com.news.pojo.Comment;
+import com.news.pojo.Manager;
 import com.news.service.CommentService;
 import com.news.utils.JsonUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +39,18 @@ public class CommentController {
         return "comment-list";
     }
 
+
+    @RequestMapping(value = "comment-department-list",method = RequestMethod.GET)
+    @SystemControllerLog(description = "获取部门新闻评论列表")
+    public String commentListByDepartment(Model model){
+        Subject subject=SecurityUtils.getSubject();
+        Manager manager = (Manager) subject.getPrincipal();
+        NewsResult newsResult = commentService.findCommentListByDid(manager.getDepartmentId());
+        List<CommentPo> commentPoList= (List<CommentPo>) newsResult.getData();
+        System.out.println(commentPoList.size());
+        model.addAttribute("commentPoList",commentPoList);
+        return "comment-department-list";
+    }
 
     @RequestMapping(value="comment/upatestate",method = RequestMethod.POST,produces="application/json;charset=UTF-8")
     @ResponseBody

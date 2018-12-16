@@ -10,13 +10,31 @@ import com.news.pojo.UserInfo;
  * @Version 1.0
  */
 public interface UserService {
-
+    /**
+     *查找用户列表
+     * @return
+     */
     NewsResult findUserList();
 
+    /**
+     *添加用户信息
+     * @param userInfo
+     * @return
+     */
     NewsResult saveUser(UserInfo userInfo);
 
+    /**
+     *更新用户信息
+     * @param userInfo 要更新的用户信息
+     * @return
+     */
     NewsResult updateUser(UserInfo userInfo);
 
+    /**
+     *通过邮箱查找用户
+     * @param email 邮箱信息
+     * @return
+     */
     NewsResult findUserByEmail(String email);
 
 

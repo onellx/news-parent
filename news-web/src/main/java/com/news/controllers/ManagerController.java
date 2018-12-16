@@ -7,22 +7,19 @@ import com.news.pojo.DepartmentInfo;
 import com.news.pojo.Manager;
 import com.news.pojo.Role;
 import com.news.service.DepartmentService;
-import com.news.service.ManagerRoleService;
 import com.news.service.ManagerService;
 import com.news.service.RoleService;
 import com.news.utils.Encrypt;
 import com.news.utils.JsonUtils;
 import com.news.utils.ListUtils;
-import com.news.utils.SysConstant;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.apache.shiro.SecurityUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,11 +48,21 @@ public class ManagerController {
     @SystemControllerLog(description = "获取管理员列表")
     public String managerList(Model model){
         NewsResult newsResult = managerService.findManagerPoList();
-
-
         List<ManagerPo> managers= (List<ManagerPo>) newsResult.getData();
         model.addAttribute("managerpos",managers);
         return "admin-list";
+    }
+
+
+    @RequestMapping(value = "admin-department-list",method = RequestMethod.GET)
+    @SystemControllerLog(description = "获取某个部门管理员列表")
+    public String managerListByDepartment(Model model){
+        Subject subject=SecurityUtils.getSubject();
+        Manager manager = (Manager) subject.getPrincipal();
+        NewsResult newsResult = managerService.findManagerPoListByDid(manager.getDepartmentId());
+        List<ManagerPo> managers= (List<ManagerPo>) newsResult.getData();
+        model.addAttribute("managerpos",managers);
+        return "admin-department-list";
     }
     @RequestMapping(value = "welcome",method = RequestMethod.GET)
     @SystemControllerLog(description = "欢迎页")
@@ -67,6 +74,8 @@ public class ManagerController {
     @RequestMapping(value="manager/upatestate",method = RequestMethod.POST,produces="application/json;charset=UTF-8")
     @ResponseBody
     public String changestate( String id,String state){
+        Subject subject=SecurityUtils.getSubject();
+        Manager m = (Manager) subject.getPrincipal();
         Manager manager=new Manager();
         manager.setManagerId(JsonUtils.jsonToPojo(id,Integer.class));
         manager.setManagerState(state);
@@ -77,38 +86,31 @@ public class ManagerController {
     @RequestMapping(value = "admin-edit/{id}",method = RequestMethod.GET)
     @SystemControllerLog(description = "修改管理员个人信息页面")
     public String editAdmin(Model model, @PathVariable Integer id){
-
         List<Role> roles= (List<Role>) roleService.findRoleList().getData();
         List<DepartmentInfo> departmentInfos= (List<DepartmentInfo>) departmentService.findDepartmentList().getData();
         model.addAttribute("roles",roles);
         model.addAttribute("departmentInfos",departmentInfos);
-
         if (id!=null&&id!=0){
             NewsResult newsResult = managerService.findManagerById(id);
             ManagerPo managerPo= (ManagerPo) newsResult.getData();
             model.addAttribute("managerPo",managerPo);
         }
-
         return "admin-edit";
     }
 
     @RequestMapping(value = "admin-add",method = RequestMethod.GET)
     @SystemControllerLog(description = "添加管理员页面")
     public String updateAdmin(Model model){
-
         List<Role> roles= (List<Role>) roleService.findRoleList().getData();
         List<DepartmentInfo> departmentInfos= (List<DepartmentInfo>) departmentService.findDepartmentList().getData();
         model.addAttribute("roles",roles);
         model.addAttribute("departmentInfos",departmentInfos);
-
         return "admin-add";
     }
-
 
     @RequestMapping(value = "change-password",method = RequestMethod.GET)
     @SystemControllerLog(description = "修改个人密码")
     public String editPasswd(Model model){
-
         return "change-password";
     }
 

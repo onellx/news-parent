@@ -1,12 +1,16 @@
 package com.news.service.impl;
 
 import com.news.mapper.CommentMapper;
+import com.news.po.ArticlePo;
 import com.news.po.CommentPo;
 import com.news.po.NewsResult;
+import com.news.pojo.Article;
 import com.news.pojo.Comment;
 import com.news.pojo.CommentExample;
 import com.news.pojo.UserInfo;
+import com.news.service.ArticleService;
 import com.news.service.CommentService;
+import com.news.service.DeparmentCatalogService;
 import com.news.service.UserService;
 import com.news.utils.StateListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +34,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentMapper commentMapper;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ArticleService articleService;
 
     @Override
     public NewsResult findCommentList() {
@@ -67,8 +73,24 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public NewsResult updateComment(Comment comment) {
         commentMapper.updateByPrimaryKeySelective(comment);
-        return null;
+        return NewsResult.ok();
     }
+
+    @Override
+    public NewsResult findCommentListByDid(Integer did) {
+        List<ArticlePo> articlePos= (List<ArticlePo>) articleService.findArticlePoListByDid(did).getData();
+        List<Integer> aids=new ArrayList<>();
+        for (ArticlePo articlePo:articlePos) {
+            aids.add(articlePo.getArticle().getArticleId());
+        }
+        CommentExample commentExample=new CommentExample();
+        CommentExample.Criteria criteria = commentExample.createCriteria();
+        criteria.andCommentStateIn(StateListUtils.getStateList());
+        criteria.andArticleIdIn(aids);
+        List<Comment> comments = commentMapper.selectByExampleWithBLOBs(commentExample);
+        return this.getCommentPoList(comments);
+    }
+
 
     private NewsResult getCommentPoList(List<Comment> comments){
         List<CommentPo> commentPos=new ArrayList<>();

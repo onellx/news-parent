@@ -1,0 +1,273 @@
+﻿<!DOCTYPE HTML>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+	  xmlns:sth="http://serendip.lumi">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../lib/html5shiv.js"></script>
+<script type="text/javascript" src="../lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="../static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="../lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="../static/h-ui.admin/css/style.css" />
+<!--[if IE 6]>
+<script type="text/javascript" src="../lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>新闻列表</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 新闻管理 <span class="c-gray en">&gt;</span> 新闻列表 <a id="searchartbtn" class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+	<div class="text-c">
+		<button onclick="removeIframe()" class="btn btn-primary radius">关闭选项卡</button>
+		<span class="select-box inline">
+		<select name="catalogId" id="catalogId" class="select" th:onchange="'javascript:selectOnchang('+this+')'">
+			<span th:if="${cid eq 0}">
+				<option value="0" selected>全部分类</option>
+			</span>
+			<span th:if="${cid ne 0}">
+				<option value="0">全部分类</option>
+			</span>
+
+			<span th:each="catalog:${catalogs}">
+				<span th:if="${cid eq catalog.getCatalogId()}">
+					<option th:value="${catalog.getCatalogId()}" th:text="${catalog.getCatalogName()}" selected></option>
+				</span>
+				<span th:if="${cid ne catalog.getCatalogId()}">
+					<option th:value="${catalog.getCatalogId()}" th:text="${catalog.getCatalogName()}"></option>
+				</span>
+			</span>
+		</select>
+		</span>
+		<input type="text" name="articleinput" id="articleinput" placeholder=" 新闻标题" style="width:250px" class="input-text">
+		<button name="articlebtn" id="articlebtn" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜资讯</button>
+	</div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+
+
+
+		<span class="l">
+		<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius">
+			<i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+		<a class="btn btn-primary radius" data-title="添加新闻" data-href="article-add.html" onclick="Hui_admin_tab(this)" href="javascript:;">
+			<i class="Hui-iconfont">&#xe600;</i> 添加新闻</a>
+	</span>
+
+		<span class="r">共有数据：<strong th:text="${articlePos.size()}"></strong> 条</span> </div>
+	<div class="mt-20">
+		<table id="articletable" class="table table-border table-bordered table-bg table-hover table-sort table-responsive">
+			<thead>
+				<tr class="text-c">
+					<th width="25"><input type="checkbox" name="" value=""></th>
+					<th width="80">ID</th>
+					<th>标题</th>
+					<th width="80">栏目</th>
+					<th width="80">编辑者</th>
+					<th width="120">更新时间</th>
+					<th width="75">浏览次数</th>
+					<th width="75">点赞次数</th>
+					<th width="60">发布状态</th>
+					<th width="120">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="text-c" th:each="article:${articlePos}">
+					<td><input type="checkbox" value="" name=""></td>
+					<td th:text="${article.getArticle().getArticleId()}"></td>
+					<td class="text-l">
+						<u style="cursor:pointer" class="text-primary" th:onclick="'javascript:article_edit('+${article.getArticle().getArticleId()}+');'" title="查看" th:text="${article.getArticle().getArticleTitle()}"></u>
+					</td>
+					<td th:text="${article.getCatalog().getCatalogName()}"></td>
+					<td th:text="${article.getManager().getManagerName()}"></td>
+					<td th:text="${#dates.format(article.getArticle().getArticleTime(),'yyyy-MM-dd HH:mm:ss')}"></td>
+					<td th:text="${article.getArticle().getArticleClicks()}"></td>
+					<td th:text="${article.getArticle().getArticleLike()}"></td>
+					<td class="td-status">
+						<label th:if="${article.getArticle().getArticleState() eq '1'}">
+							<span class="label label-success radius">已发布</span>
+						</label>
+						<label th:if="${article.getArticle().getArticleState() eq '2'}">
+							<span class="label label-defaunt radius">已下架</span>
+						</label>
+					</td>
+					<td class="f-14 td-manage">
+						<label th:if="${article.getArticle().getArticleState() eq '1'}">
+							<a style="text-decoration:none" th:onclick="'javascript:article_state('+this+','+${article.getArticle().getArticleId()}+',2);'" href="javascript:;" title="下架">
+								<i class="Hui-iconfont">&#xe6de;</i>
+							</a>
+						</label>
+						<label th:if="${article.getArticle().getArticleState() eq '2'}">
+							<a style="text-decoration:none" th:onclick="'javascript:article_state('+this+','+${article.getArticle().getArticleId()}+',1);'" href="javascript:;" title="发布">
+								<i class="Hui-iconfont">&#xe603;</i>
+							</a>
+						</label>
+						<a style="text-decoration:none" class="ml-5" th:onclick="'javascript:article_edit('+${article.getArticle().getArticleId()}+');'" href="javascript:;" title="编辑">
+							<i class="Hui-iconfont">&#xe6df;</i>
+						</a>
+						<a style="text-decoration:none" class="ml-5" th:onclick="'javascript:article_state('+this+','+${article.getArticle().getArticleId()}+',3);'" href="javascript:;" title="删除">
+							<i class="Hui-iconfont">&#xe6e2;</i>
+						</a>
+					</td>
+
+				</tr>
+
+			</tbody>
+		</table>
+	</div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="../lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="../static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="../static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="../lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="../lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript">
+
+    //实现功能,搜索显示,大小写搜索不会影响,模糊搜索
+    window.onload=function () {
+        var otab = document.getElementById('articletable');//表格Id
+        var obtn = document.getElementById('articlebtn');//搜索按钮
+        var otext = document.getElementById('articleinput');//文本
+        obtn.onclick=function () {
+            for (var i = 0; i < otab.tBodies[0].rows.length ; i++) {
+
+                var stab2 = otab.tBodies[0].rows[i].cells[2].innerHTML.toLowerCase();
+                var stext = otext.value.toLowerCase();
+                // toLowerCase()将英文全部转换成小写,为了用户在输入小写的时候仍然可以将内容搜索出来
+                var arr = stext.split(' ');
+                //split的作用将某一段字符串按照指定字符进行切割
+                otab.tBodies[0].rows[i].style.background = "";//确保在下一次搜索时上一次搜索不会影响这次搜索的结果
+                for (var j = 0; j < arr.length; j++) {
+
+                    if (stab2.search(arr[j]) != -1) {
+                        otab.tBodies[0].rows[i].style.background = 'yellow';
+                    }
+                }
+            }
+        }
+
+    };
+
+
+
+
+
+
+
+    function selectOnchang(obj){
+        var value = obj.options[obj.selectedIndex].value;
+        $.ajax({
+            type: 'GET',
+            url: '../article-department-list/'+value,
+            success: function(data){
+                window.location.href="../article-department-list/"+value;
+            },
+            error:function(data) {
+                console.log(data.msg);
+            }
+        });
+
+
+    }
+
+$('.table-sort').dataTable({
+	"aaSorting": [ 1, "desc" ],//默认第几个排序
+	"bStateSave": true,//状态保存
+	"pading":false,
+	"aoColumnDefs": [
+	  //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+	  {"orderable":false,"aTargets":[1,7]}// 不参与排序的列
+	]
+});
+
+/*资讯-添加*/
+function article_add(title,url,w,h){
+	var index = layer.open({
+		type: 2,
+		title: title,
+		content: url
+	});
+	layer.full(index);
+}
+/*资讯-编辑*/
+function article_edit(id){
+	var index = layer.open({
+		type: 2,
+		title: '新闻编辑',
+		content: '../article-edit/'+id
+	});
+	layer.full(index);
+}
+/*新闻-状态*/
+function article_state(obj,id,state){
+  	var message;
+  	if (state===1){
+  	    message="确定要上线吗？";
+	} else if (state===2){
+        message="确定要下架吗？";
+	} else if (state===3){
+        message="确定要删除吗？";
+	}
+	layer.confirm(message,function(index){
+		$.ajax({
+			type: 'POST',
+			url: '../article/upatestate',
+			dataType: 'json',
+            data:{"id":id,"state":state},
+			success: function(data){
+				$(obj).parents("tr").remove();
+				layer.msg('已删除!',{icon:1,time:1000});
+                window.location.reload();
+			},
+			error:function(data) {
+				console.log(data.msg);
+			},
+		});		
+	});
+}
+
+/*资讯-审核*/
+function article_shenhe(obj,id){
+	layer.confirm('审核文章？', {
+		btn: ['通过','不通过','取消'], 
+		shade: false,
+		closeBtn: 0
+	},
+	function(){
+		$(obj).parents("tr").find(".td-manage").prepend('<a class="c-primary" onClick="article_start(this,id)" href="javascript:;" title="申请上线">申请上线</a>');
+		$(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已发布</span>');
+		$(obj).remove();
+		layer.msg('已发布', {icon:6,time:1000});
+	},
+	function(){
+		$(obj).parents("tr").find(".td-manage").prepend('<a class="c-primary" onClick="article_shenqing(this,id)" href="javascript:;" title="申请上线">申请上线</a>');
+		$(obj).parents("tr").find(".td-status").html('<span class="label label-danger radius">未通过</span>');
+		$(obj).remove();
+    	layer.msg('未通过', {icon:5,time:1000});
+	});	
+}
+
+/*资讯-申请上线*/
+function article_shenqing(obj,id){
+	$(obj).parents("tr").find(".td-status").html('<span class="label label-default radius">待审核</span>');
+	$(obj).parents("tr").find(".td-manage").html("");
+	layer.msg('已提交申请，耐心等待审核!', {icon: 1,time:2000});
+}
+
+</script> 
+</body>
+</html>

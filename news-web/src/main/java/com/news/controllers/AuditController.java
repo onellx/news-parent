@@ -3,7 +3,10 @@ package com.news.controllers;
 import com.news.annotation.SystemControllerLog;
 import com.news.po.ArticlePo;
 import com.news.pojo.Article;
+import com.news.pojo.Manager;
 import com.news.service.ArticleService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,8 +30,16 @@ public class AuditController {
     @RequestMapping(value = "audit-list",method = RequestMethod.GET)
     @SystemControllerLog(description = "审核信息页面")
     public String auditList(Model model){
-        List<ArticlePo> articlePos= (List<ArticlePo>) articleService.findAutditAcrticlePo().getData();
-        model.addAttribute("articlePos",articlePos);
+        Subject subject=SecurityUtils.getSubject();
+        Manager manager = (Manager) subject.getPrincipal();
+        if (manager.getDepartmentId()==1){
+            List<ArticlePo> articlePos= (List<ArticlePo>) articleService.findAutditAcrticlePo().getData();
+            model.addAttribute("articlePos",articlePos);
+        }else{
+            List<ArticlePo> articlePos= (List<ArticlePo>) articleService.findAuditArticlePoListByDid(manager.getDepartmentId()).getData();
+            model.addAttribute("articlePos",articlePos);
+        }
         return "audit-list";
     }
+
 }

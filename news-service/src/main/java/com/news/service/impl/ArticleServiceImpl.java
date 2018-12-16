@@ -4,12 +4,10 @@ import com.news.mapper.ArticleMapper;
 import com.news.po.ArticlePo;
 import com.news.po.ManagerPo;
 import com.news.po.NewsResult;
-import com.news.pojo.Article;
-import com.news.pojo.ArticleExample;
-import com.news.pojo.Catalog;
-import com.news.pojo.Manager;
+import com.news.pojo.*;
 import com.news.service.ArticleService;
 import com.news.service.CatalogService;
+import com.news.service.DeparmentCatalogService;
 import com.news.service.ManagerService;
 import com.news.utils.*;
 import org.apache.shiro.SecurityUtils;
@@ -35,7 +33,8 @@ public class ArticleServiceImpl implements ArticleService {
     private ManagerService managerService;
     @Autowired
     private CatalogService catalogService;
-
+    @Autowired
+    private DeparmentCatalogService deparmentCatalogService;
 
     @Override
     public NewsResult findArticleList() {
@@ -82,7 +81,6 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public NewsResult findAutditAcrticle() {
         ArticleExample articleExample=new ArticleExample();
-
         ArticleExample.Criteria criteria = articleExample.createCriteria();
         criteria.andArticleStateEqualTo("0");
         List<Article> articles = articleMapper.selectByExample(articleExample);
@@ -100,7 +98,7 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleExample articleExample=new ArticleExample();
         ArticleExample.Criteria criteria = articleExample.createCriteria();
         criteria.andArticleStateIn(StateListUtils.getStateList());
-        criteria.andArticleIdEqualTo(id);
+        criteria.andCatalogIdEqualTo(id);
         List<Article> articles = articleMapper.selectByExampleWithBLOBs(articleExample);
         return this.getArticlePoList(articles);
     }
@@ -124,6 +122,37 @@ public class ArticleServiceImpl implements ArticleService {
         articleExample.setOrderByClause("article_clicks desc");
         List<Article> articles = articleMapper.selectByExample(articleExample);
         return NewsResult.ok(articles);
+    }
+
+    @Override
+    public NewsResult findArticlePoListByDid(Integer did) {
+        List<DepartCatalog> departCatalogs= (List<DepartCatalog>) deparmentCatalogService.findDepartmentCatalofListByDid(did).getData();
+        List<Integer> cid=new ArrayList<>();
+        for (DepartCatalog departCatalog:departCatalogs){
+            cid.add(departCatalog.getCatalogId());
+        }
+        ArticleExample articleExample=new ArticleExample();
+        articleExample.setOrderByClause("article_time desc");
+        ArticleExample.Criteria criteria = articleExample.createCriteria();
+        criteria.andArticleStateIn(StateListUtils.getStateList());
+        criteria.andCatalogIdIn(cid);
+        List<Article> articles = articleMapper.selectByExampleWithBLOBs(articleExample);
+        return this.getArticlePoList(articles);
+    }
+
+    @Override
+    public NewsResult findAuditArticlePoListByDid(Integer did) {
+        List<DepartCatalog> departCatalogs= (List<DepartCatalog>) deparmentCatalogService.findDepartmentCatalofListByDid(did).getData();
+        List<Integer> cids=new ArrayList<>();
+        for (DepartCatalog departCatalog:departCatalogs) {
+            cids.add(departCatalog.getCatalogId());
+        }
+        ArticleExample articleExample=new ArticleExample();
+        ArticleExample.Criteria criteria = articleExample.createCriteria();
+        criteria.andArticleStateEqualTo("0");
+        criteria.andCatalogIdIn(cids);
+        List<Article> articles = articleMapper.selectByExample(articleExample);
+        return this.getArticlePoList(articles);
     }
 
     private NewsResult getArticlePoList(List<Article> articles){

@@ -10,6 +10,7 @@ import com.news.mapper.ManagerMapper;
 import com.news.mapper.ManagerRoleMapper;
 import com.news.mapper.RoleMapper;
 import com.news.po.NewsResult;
+import com.news.service.RoleService;
 import com.news.utils.Encrypt;
 import com.news.utils.StateListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,24 +33,12 @@ public class ManagerServiceImpl implements ManagerService {
     @Autowired
     private ManagerMapper managerMapper;
     @Autowired
-    private ManagerRoleMapper managerRoleMapper;
-    @Autowired
-    private RoleMapper roleMapper;
-    @Autowired
-    private DepartmentInfoMapper departmentInfoMapper;
+    private RoleService roleService;
     @Autowired
     private ManagerRoleService managerRoleService;
-
     @Autowired
     private DepartmentService departmentService;
 
-    public NewsResult selectBynameNum(String managerNum) {
-        ManagerExample managerExample=new ManagerExample();
-        ManagerExample.Criteria criteria = managerExample.createCriteria();
-        criteria.andManagerNumberEqualTo(managerNum);
-        List<Manager> userList = managerMapper.selectByExample(managerExample);
-        return NewsResult.ok(userList);
-    }
 
 
     public NewsResult insertManager(Manager manager,List<Integer> roldIds) {
@@ -67,44 +56,12 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     public NewsResult findManagerPoList() {
-        List<ManagerPo> managerPos=new ArrayList<ManagerPo>();
+
         List<Manager> managers = (List<Manager>) this.findManagerList().getData();
-
         if (managers.isEmpty()) {
-            return NewsResult.build(400,"没有管理员",managerPos);
+            return NewsResult.build(400,"没有管理员",null);
         }
-        List<Integer> dids=new ArrayList<Integer>();
-        for (Manager m:managers) {
-            dids.add(m.getDepartmentId());
-        }
-        //获取部门列表
-        DepartmentInfoExample departmentInfoExample=new DepartmentInfoExample();
-        DepartmentInfoExample.Criteria criteria2 = departmentInfoExample.createCriteria();
-        List<DepartmentInfo> departmentInfos = departmentInfoMapper.selectByExample(departmentInfoExample);
-        Map<Integer, DepartmentInfo> departmentInfoMap = departmentInfos.stream().collect(Collectors.toMap(DepartmentInfo::getDepartmentId, a -> a,(k1, k2)->k1));
-        //获取权限列表
-
-        for(int i=0;i<managers.size();i++){
-            ManagerPo managerPo=new ManagerPo();
-            managerPo.setManager(managers.get(i));
-            managerPo.setDepartmentInfo(departmentInfoMap.get(managers.get(i).getDepartmentId()));
-            //可优化处
-            ManagerRoleExample managerRoleExample=new ManagerRoleExample();
-            ManagerRoleExample.Criteria criteria1 = managerRoleExample.createCriteria();
-            criteria1.andManagerIdEqualTo(managers.get(i).getManagerId());
-            List<ManagerRole> managerRoles = managerRoleMapper.selectByExample(managerRoleExample);
-            List<Integer> rids=new ArrayList<Integer>();
-            for (ManagerRole mr:managerRoles) {
-                rids.add(mr.getRoleId());
-            }
-            RoleExample roleExample=new RoleExample();
-            RoleExample.Criteria criteria3 = roleExample.createCriteria();
-            criteria3.andRoleIdIn(rids);
-            List<Role> roles = roleMapper.selectByExample(roleExample);
-            managerPo.setRoles(roles);
-            managerPos.add(managerPo);
-        }
-
+        List<ManagerPo> managerPos= (List<ManagerPo>) this.getManagerPoList(managers).getData();
         return NewsResult.ok(managerPos);
     }
 
@@ -132,27 +89,17 @@ public class ManagerServiceImpl implements ManagerService {
     public NewsResult findManagerById(Integer id) {
 
         Manager manager=managerMapper.selectByPrimaryKey(id);
-        DepartmentInfo departmentInfo=departmentInfoMapper.selectByPrimaryKey(manager.getDepartmentId());
-
-        ManagerRoleExample managerRoleExample=new ManagerRoleExample();
-        ManagerRoleExample.Criteria criteria = managerRoleExample.createCriteria();
-        criteria.andManagerIdEqualTo(id);
-        List<ManagerRole> managerRoles = managerRoleMapper.selectByExample(managerRoleExample);
+        DepartmentInfo departmentInfo= (DepartmentInfo) departmentService.findDepartmentById(manager.getDepartmentId()).getData();
+        List<ManagerRole> managerRoles = (List<ManagerRole>) managerRoleService.findManagerRoleByMid(id).getData();
         List<Integer> rids=new ArrayList<Integer>();
         for (ManagerRole m:managerRoles) {
             rids.add(m.getRoleId());
         }
-
-        RoleExample roleExample=new RoleExample();
-        RoleExample.Criteria criteria1 = roleExample.createCriteria();
-        criteria1.andRoleIdIn(rids);
-        List<Role> roles = roleMapper.selectByExample(roleExample);
-
+        List<Role> roles = (List<Role>) roleService.findRoleListByRids(rids).getData();
         ManagerPo managerPo=new ManagerPo();
         managerPo.setManager(manager);
         managerPo.setDepartmentInfo(departmentInfo);
         managerPo.setRoles(roles);
-
         return NewsResult.ok(managerPo);
     }
 
@@ -177,10 +124,10 @@ public class ManagerServiceImpl implements ManagerService {
         List<Manager> list = managerMapper.selectByExample(example);
         if(list != null && list.size() != 0)   //如果不为空 ，该用户名已被注册
         {
-            return NewsResult.ok( list.get(0));
+            return NewsResult.ok( list);
         }
 
-        return NewsResult.build(400, "没有此工号");
+        return NewsResult.build(400, "没有此工号",null);
     }
 
     @Override
@@ -212,12 +159,55 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public NewsResult updateManagerRole(Manager manager, List<Integer> roldIds) {
-        Manager m= (Manager) this.findManagerByNumber(manager.getManagerNumber()).getData();
+        List<Manager> managers= (List<Manager>) this.findManagerByNumber(manager.getManagerNumber()).getData();
+        Manager m=managers.get(0);
         manager.setManagerId(m.getManagerId());
         this.updateManager(manager);
         managerRoleService.deleteRoleByManagerId(manager.getManagerId());
         managerRoleService.saveRole(manager.getManagerId(),roldIds);
         return NewsResult.ok();
+    }
+
+    @Override
+    public NewsResult findManagerPoListByDid(Integer did) {
+        ManagerExample managerExample=new ManagerExample();
+        ManagerExample.Criteria criteria = managerExample.createCriteria();
+        criteria.andManagerStateIn(StateListUtils.getStateList());
+        criteria.andDepartmentIdEqualTo(did);
+        List<Manager> managers = managerMapper.selectByExample(managerExample);
+        if (managers.isEmpty()) {
+            return NewsResult.build(400,"没有管理员",null);
+        }
+        List<ManagerPo> managerPos= (List<ManagerPo>) this.getManagerPoList(managers).getData();
+        return NewsResult.ok(managerPos);
+    }
+
+    private NewsResult getManagerPoList(List<Manager> managers){
+        List<ManagerPo> managerPos=new ArrayList<ManagerPo>();
+        List<Integer> dids=new ArrayList<Integer>();
+        for (Manager m:managers) {
+            dids.add(m.getDepartmentId());
+        }
+        //获取部门列表
+        List<DepartmentInfo> departmentInfos = (List<DepartmentInfo>) departmentService.findDepartmentList().getData();
+        Map<Integer, DepartmentInfo> departmentInfoMap = departmentInfos.stream().collect(Collectors.toMap(DepartmentInfo::getDepartmentId, a -> a,(k1, k2)->k1));
+        //获取权限列表
+        for(int i=0;i<managers.size();i++){
+            ManagerPo managerPo=new ManagerPo();
+            managerPo.setManager(managers.get(i));
+            managerPo.setDepartmentInfo(departmentInfoMap.get(managers.get(i).getDepartmentId()));
+            //可优化处
+            List<ManagerRole> managerRoles = (List<ManagerRole>) managerRoleService.findManagerRoleByMid(managers.get(i).getManagerId()).getData();
+            List<Integer> rids=new ArrayList<Integer>();
+            for (ManagerRole mr:managerRoles) {
+                rids.add(mr.getRoleId());
+            }
+            List<Role> roles = (List<Role>) roleService.findRoleListByRids(rids).getData();
+            managerPo.setRoles(roles);
+            managerPos.add(managerPo);
+        }
+        return NewsResult.ok(managerPos);
+
     }
 
 

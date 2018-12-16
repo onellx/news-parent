@@ -70,13 +70,19 @@
 </header>
 <aside class="Hui-aside">
 	<div class="menu_dropdown bk_2">
-		<shiro:hasPermission name="查看新闻">
+		<shiro:hasPermission name="新闻管理">
 		<dl id="menu-article">
 			<dt><i class="Hui-iconfont">&#xe616;</i> 文章管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="article-list/0" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
-			</ul>
+					<shiro:hasPermission name="查看所有新闻">
+						<li><a data-href="article-list/0" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="查看部门新闻">
+						<li><a data-href="article-department-list/0" data-title="文章管理" href="javascript:void(0)">文章管理</a></li>
+					</shiro:hasPermission>
+
+				</ul>
 		</dd>
 	</dl>
 	</shiro:hasPermission>
@@ -95,8 +101,13 @@
 			<dt><i class="Hui-iconfont">&#xe622;</i> 评论管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="comment-list.html" data-title="意见反馈" href="javascript:void(0)">评论列表</a></li>
-			</ul>
+					<shiro:hasPermission name="评论管理">
+						<li><a data-href="comment-list.html" data-title="意见反馈" href="javascript:void(0)">评论列表</a></li>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="部门评论管理">
+						<li><a data-href="comment-department-list" data-title="意见反馈" href="javascript:void(0)">评论列表</a></li>
+					</shiro:hasPermission>
+				</ul>
 		</dd>
 	</dl>
 	</shiro:hasPermission>
@@ -107,13 +118,23 @@
 				<ul>
 					<!-- <li><a data-href="admin-role.html" data-title="角色管理" href="javascript:void(0)">角色管理</a></li>
 					<li><a data-href="admin-permission.html" data-title="权限管理" href="javascript:void(0)">权限管理</a></li> -->
+					<shiro:hasPermission name="管理员管理">
+						<li>
+							<a data-href="admin-list.html" data-title="管理员列表" href="javascript:void(0)">管理员列表</a>
+						</li>
+					</shiro:hasPermission>
 
-					<li><a data-href="admin-list.html" data-title="管理员列表" href="javascript:void(0)">管理员列表</a></li>
+					<shiro:hasPermission name="查看部门管理员">
+						<li>
+							<a data-href="admin-department-list.html" data-title="管理员列表" href="javascript:void(0)">管理员列表</a>
+						</li>
+					</shiro:hasPermission>
+
 			</ul>
 		</dd>
 	</dl>
 	</shiro:hasPermission>
-		<shiro:hasPermission name="查看栏目">
+		<shiro:hasPermission name="栏目管理">
 		<dl id="menu-system">
 			<dt><i class="Hui-iconfont">&#xe62e;</i> 栏目管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>

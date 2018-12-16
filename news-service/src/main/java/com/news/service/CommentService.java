@@ -10,14 +10,38 @@ import com.news.pojo.Comment;
  * @Version 1.0
  */
 public interface CommentService {
-
+    /**
+     *获取评论列表
+     * @return
+     */
     NewsResult findCommentList();
 
+    /**
+     *添加评论
+     * @param comment
+     * @return
+     */
     NewsResult saveComment(Comment comment);
 
+    /**
+     *获取CommentPo列表
+     * @return
+     */
     NewsResult findCommentPoList();
 
+    /**
+     *通过文章ID查找CommentPo列表
+     * @param id
+     * @return
+     */
     NewsResult findCommentPoListByArticleid(Integer id);
 
+    /**
+     *更新评论
+     * @param comment 要更新的评论对象
+     * @return
+     */
     NewsResult updateComment(Comment comment);
+
+    NewsResult findCommentListByDid(Integer did);
 }

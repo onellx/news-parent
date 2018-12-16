@@ -28,4 +28,14 @@ public class RoleServiceImpl implements RoleService {
         return NewsResult.ok(roles);
     }
 
+    @Override
+    public NewsResult findRoleListByRids(List<Integer> rids) {
+        //通过角色id查找角色
+        RoleExample roleExample=new RoleExample();
+        RoleExample.Criteria criteria1 = roleExample.createCriteria();
+        criteria1.andRoleIdIn(rids);
+        List<Role> roles = roleMapper.selectByExample(roleExample);
+        return NewsResult.ok(roles);
+    }
+
 }

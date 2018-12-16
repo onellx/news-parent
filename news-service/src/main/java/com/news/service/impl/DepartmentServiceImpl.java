@@ -30,15 +30,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private DepartmentInfoMapper departmentInfoMapper;
-
-    @Autowired
-    private DepartCatalogMapper departCatalogMapper;
-    @Autowired
-    private CatalogMapper catalogMapper;
     @Autowired
     private CatalogService catalogService;
     @Autowired
     private DeparmentCatalogService deparmentCatalogService;
+
 
 
     public NewsResult findDepartmentList() {
@@ -46,7 +42,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         DepartmentInfoExample.Criteria criteria = departmentInfoExample.createCriteria();
         criteria.andDepartmentStateIn(StateListUtils.getStateList());
         List<DepartmentInfo> departmentInfos = departmentInfoMapper.selectByExample(departmentInfoExample);
-
         return NewsResult.ok(departmentInfos);
     }
 
@@ -58,10 +53,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Map<Integer,Catalog> catalogMap=catalogs.stream().collect(Collectors.toMap(Catalog::getCatalogId,a->a,(k1,k2)->k1));
         for (DepartmentInfo department:departmentInfos) {
             List<Catalog> catalogList=new ArrayList<Catalog>();
-            DepartCatalogExample departCatalogExample=new DepartCatalogExample();
-            DepartCatalogExample.Criteria criteria = departCatalogExample.createCriteria();
-            criteria.andDepartmentIdEqualTo(department.getDepartmentId());
-            List<DepartCatalog> departCatalogs = departCatalogMapper.selectByExample(departCatalogExample);
+            List<DepartCatalog> departCatalogs = (List<DepartCatalog>) deparmentCatalogService.findDepartmentCatalofListByDid(department.getDepartmentId()).getData();
             for (DepartCatalog dc:departCatalogs) {
                 catalogList.add(catalogMap.get(dc.getCatalogId()));
             }
@@ -95,25 +87,25 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public NewsResult findDepartmentPoById(Integer deparmentId) {
         DepartmentPo departmentPo=new DepartmentPo();
-        DepartmentInfo departmentInfo = departmentInfoMapper.selectByPrimaryKey(deparmentId);
+        DepartmentInfo departmentInfo = (DepartmentInfo) this.findDepartmentById(deparmentId).getData();
         departmentPo.setDepartmentInfo(departmentInfo);
-        DepartCatalogExample departCatalogExample=new DepartCatalogExample();
-        DepartCatalogExample.Criteria criteria = departCatalogExample.createCriteria();
-        criteria.andDepartmentIdEqualTo(departmentInfo.getDepartmentId());
-        List<DepartCatalog> departCatalogs = departCatalogMapper.selectByExample(departCatalogExample);
+        List<DepartCatalog> departCatalogs = (List<DepartCatalog>) deparmentCatalogService.findDepartmentCatalofListByDid(departmentInfo.getDepartmentId()).getData();
         List<Integer> cid=new ArrayList<Integer>();
         for (DepartCatalog dc:departCatalogs) {
             cid.add(dc.getCatalogId());
         }
-        CatalogExample catalogExample=new CatalogExample();
-        CatalogExample.Criteria criteria1 = catalogExample.createCriteria();
         List<Catalog> catalogs =new ArrayList<Catalog>();
         if (!cid.isEmpty()){
-            criteria1.andCatalogIdIn(cid);
-            catalogs = catalogMapper.selectByExample(catalogExample);
+            catalogs= (List<Catalog>) catalogService.findCatalogListByCids(cid).getData();
         }
         departmentPo.setCatalogs(catalogs);
         return NewsResult.ok(departmentPo);
+    }
+
+    @Override
+    public NewsResult findDepartmentById(Integer deparmentId) {
+        DepartmentInfo departmentInfo = departmentInfoMapper.selectByPrimaryKey(deparmentId);
+        return NewsResult.ok(departmentInfo);
     }
 
     @Override

@@ -86,7 +86,7 @@ public class AuthRealm extends AuthorizingRealm{
 		
 		//2.调用业务方法，实现根据工号查询
 		//
-		NewsResult result=managerService.selectBynameNum(upToken.getUsername());
+		NewsResult result=managerService.findManagerByNumber(upToken.getUsername());
 
 		//如果查询成功
 		if(result.getStatus()==200) {
